@@ -151,6 +151,7 @@ func main() {
 
 }
 
+```
 
 ## Environments
 
@@ -242,21 +243,11 @@ import (
 
 func main() {
 
-  var appLog = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-  f, err := os.OpenFile("appLog.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-  defer f.Close()
-  if err != nil {
-    log.Fatalf("error opening file: %v", err)
-  }
-  appLog.SetOutput(f)
-  appLog.Println("MAIN begin")
-
   err := nps.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "debug":       true,
 	  "log_level":   CONSTANTS.INFO,
-	  "npsLog":      appLog,      
 	})
 ```
 
@@ -273,15 +264,6 @@ import (
 )
 
 func main() {
-
-  var appLog = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-  f, err := os.OpenFile("appLog.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-  defer f.Close()
-  if err != nil {
-    log.Fatalf("error opening file: %v", err)
-  }
-  appLog.SetOutput(f)
-  appLog.Println("MAIN begin")
 
   err := nps.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
@@ -307,15 +289,6 @@ import (
 
 func main() {
 
-  var appLog = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-  f, err := os.OpenFile("appLog.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-  defer f.Close()
-  if err != nil {
-    log.Fatalf("error opening file: %v", err)
-  }
-  appLog.SetOutput(f)
-  appLog.Println("MAIN begin")
-
   err := nps.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
@@ -339,25 +312,12 @@ import (
 
 func main() {
 
-  var appLog = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-  f, err := os.OpenFile("appLog.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-  defer f.Close()
-  if err != nil {
-    log.Fatalf("error opening file: %v", err)
-  }
-  appLog.SetOutput(f)
-  appLog.Println("MAIN begin")
-
   err := nps.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "proxy_url": "http://yourproxy",
-	  "timeout": 65,
+	  "proxy_username": "proxyUsername",
+	  "proxy_password": "proxyPassword",
 	})
-
-Configuration::secretKey(“your key here”);
-Configuration::proxyUrl("http://yourproxy");
-Configuration::proxy_username("proxyUsername");
-Configuration::proxy_password("proxyPassword");
 
 ```
