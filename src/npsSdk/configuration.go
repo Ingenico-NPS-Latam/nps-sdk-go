@@ -1,9 +1,9 @@
-package nps
+package npsSdk
 
 import (
 	"errors"
 	"log"
-	CONSTANTS "nps/constants"
+	CONSTANTS "npsSdk/constants"
 	"os"
 )
 
@@ -71,12 +71,8 @@ func Configure(m map[string]interface{}) error {
 				Configuration.url = CONSTANTS.STAGING_URL
 			case CONSTANTS.SANDBOX_ENV:
 				Configuration.url = CONSTANTS.SANDBOX_URL
-			case CONSTANTS.DEVELOPMENT_ENV:
-				Configuration.url = CONSTANTS.DEVELOPMENT_URL
-			case CONSTANTS.LOCAL_ENV:
-				Configuration.url = CONSTANTS.LOCAL_URL
 			default:
-				errMsg := "environment must be [CONSTANTS.PRODUCTION_ENV|CONSTANTS.STAGING_ENV|CONSTANTS.SANDBOX_ENV|CONSTANTS.DEVELOPMENT_ENV]"
+				errMsg := "environment must be [CONSTANTS.PRODUCTION_ENV|CONSTANTS.STAGING_ENV|CONSTANTS.SANDBOX_ENV]"
 				log.Println(errMsg)
 				err := errors.New(errMsg)
 				return err

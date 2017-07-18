@@ -1,4 +1,4 @@
-package nps
+package npsSdk
 
 import (
 	"encoding/xml"

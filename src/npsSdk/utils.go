@@ -1,4 +1,4 @@
-package nps
+package npsSdk
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	CONSTANTS "nps/constants"
+	CONSTANTS "npsSdk/constants"
 	"reflect"
 	"sort"
 	"strings"

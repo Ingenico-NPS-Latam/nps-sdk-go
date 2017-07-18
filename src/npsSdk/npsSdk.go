@@ -1,4 +1,4 @@
-package nps
+package npsSdk
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	CONSTANTS "nps/constants"
+	CONSTANTS "npsSdk/constants"
 	"os"
 	"syscall"
 	"time"
@@ -847,10 +847,12 @@ func (s *SOAPClient) Call(soapAction string, request, response interface{}) erro
 			tr.Proxy = http.ProxyURL(proxyUrl)
 		}
 	}
+	Log(CONSTANTS.DEBUG, "proxy config done")
 
 	client := &http.Client{Transport: tr,
 		Timeout: time.Duration(time.Duration(Configuration.execution_Timeout) * time.Second)}
 
+	Log(CONSTANTS.DEBUG, "client set")
 	res, err := client.Do(req)
 	if err != nil {
 		return err

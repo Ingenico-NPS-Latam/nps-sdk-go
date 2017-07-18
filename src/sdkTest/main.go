@@ -3,60 +3,60 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
-func SendPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "2017-06-29 12:00:00"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	SellerAddress := nps.NewAddressStruct()
+	SellerAddress := npsSdk.NewAddressStruct()
 	SellerAddress.City = "CABA"
 	SellerAddress.Country = "ARG"
 	SellerAddress.Street = "SellerStreet"
 	SellerAddress.HouseNumber = "1234"
 
-	SellerDetails := nps.NewSellerDetailsStruct()
+	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetails.Name = "Seller Name"
 	SellerDetails.Address = SellerAddress
 
-	MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
 	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
 	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	payOnline2p := nps.NewRequerimientoStruct_PayOnLine_2p()
+	payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
 
 	payOnline2p.Psp_Version = "2.2"
 	payOnline2p.Psp_MerchantId = "psp_test"
@@ -92,9 +92,9 @@ func SendPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendSplitPayOnLine_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendSplitPayOnLine_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	splitPayOnline3p := nps.NewRequerimientoStruct_SplitPayOnLine_3p()
+	splitPayOnline3p := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p()
 
 	splitPayOnline3p.Psp_Version = "2.2"
 	splitPayOnline3p.Psp_MerchantId = "psp_test"
@@ -108,22 +108,22 @@ func SendSplitPayOnLine_3p(service *nps.PaymentServicePlatformPortType) error {
 	splitPayOnline3p.Psp_Product = "14"
 	splitPayOnline3p.Psp_PosDateTime = "2016-12-01 12:00:00"
 
-	trn := nps.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
+	trn := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
 	trn.Psp_MerchantId = "psp_test"
 	trn.Psp_MerchTxRef = "ORDER66666-5"
 	trn.Psp_Product = "14"
 	trn.Psp_Amount = "10000"
 	trn.Psp_NumPayments = "1"
 
-	trn2 := nps.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
+	trn2 := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
 	trn2.Psp_MerchantId = "psp_test"
 	trn2.Psp_MerchTxRef = "ORDER66666-6"
 	trn2.Psp_Product = "14"
 	trn2.Psp_Amount = "5050"
 	trn2.Psp_NumPayments = "1"
 
-	Transactions := nps.NewArrayOf_RequerimientoStruct_SplitPayOnLine_3p_Transactions()
-	Transactions.Items = make([]*nps.RequerimientoStruct_SplitPayOnLine_3p_Transactions, 0)
+	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_3p_Transactions()
+	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitPayOnLine_3p_Transactions, 0)
 
 	Transactions.Items = append(Transactions.Items, trn)
 	Transactions.Items = append(Transactions.Items, trn2)
@@ -160,9 +160,9 @@ func SendSplitPayOnLine_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendAuthorize_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	authorize2p := nps.NewRequerimientoStruct_Authorize_2p()
+	authorize2p := npsSdk.NewRequerimientoStruct_Authorize_2p()
 
 	authorize2p.Psp_Version = "2.2"
 	authorize2p.Psp_MerchantId = "psp_test"
@@ -178,74 +178,74 @@ func SendAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	authorize2p.Psp_CardExpDate = "1812"
 	authorize2p.Psp_PosDateTime = "2016-12-01 12:00:00"
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	Taxes := nps.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*nps.TaxesRequestStruct, 0)
+	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
+	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := nps.NewTaxesRequestStruct()
+	tax1 := npsSdk.NewTaxesRequestStruct()
 	tax1.TypeId = "500"
 	tax1.Amount = "50"
 	tax1.Rate = "10"
 
 	Taxes.Items = append(Taxes.Items, tax1)
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 	AmountAdditionalDetails.Taxes = Taxes
 
-	SellerAddress := nps.NewAddressStruct()
+	SellerAddress := npsSdk.NewAddressStruct()
 	SellerAddress.City = "CABA"
 	SellerAddress.Country = "ARG"
 	SellerAddress.Street = "SellerStreet"
 	SellerAddress.HouseNumber = "1234"
 
-	SellerDetails := nps.NewSellerDetailsStruct()
+	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetails.Name = "Seller Name"
 	SellerDetails.Address = SellerAddress
 
-	MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
 	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
 	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	ShippingDetails := nps.NewShippingDetailsStruct()
+	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
-	ShippingAddress := nps.NewAddressStruct()
+	ShippingAddress := npsSdk.NewAddressStruct()
 	ShippingAddress.Street = "shipping street"
 	ShippingAddress.HouseNumber = "1234"
 	ShippingAddress.City = "CABA"
 	ShippingAddress.Country = "ARG"
 	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
 
-	PrimaryRecipient := nps.NewPersonStruct()
+	PrimaryRecipient := npsSdk.NewPersonStruct()
 	PrimaryRecipient.FirstName = "Pepe"
 	PrimaryRecipient.LastName = "Juan"
 
@@ -271,9 +271,9 @@ func SendAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendCreateClientSession(service *nps.PaymentServicePlatformPortType) error {
+func SendCreateClientSession(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	createClientSession := nps.NewRequerimientoStruct_CreateClientSession()
+	createClientSession := npsSdk.NewRequerimientoStruct_CreateClientSession()
 
 	createClientSession.Psp_Version = "2.2"
 	createClientSession.Psp_MerchantId = "psp_test"
@@ -291,16 +291,16 @@ func SendCreateClientSession(service *nps.PaymentServicePlatformPortType) error 
 	return nil
 }
 
-func SendCreatePaymentMethod(service *nps.PaymentServicePlatformPortType) error {
+func SendCreatePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	createPaymentMethod := nps.NewRequerimientoStruct_CreatePaymentMethod()
+	createPaymentMethod := npsSdk.NewRequerimientoStruct_CreatePaymentMethod()
 
 	createPaymentMethod.Psp_Version = "2.2"
 	createPaymentMethod.Psp_MerchantId = "psp_test"
 	createPaymentMethod.Psp_PosDateTime = "2017-06-19 12:00:00"
 
-	paymentMethod := nps.NewPaymentMethodInputDetailsStruct()
-	cardInputDetails := nps.NewCardInputDetailsStruct()
+	paymentMethod := npsSdk.NewPaymentMethodInputDetailsStruct()
+	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
 	cardInputDetails.HolderName = "tester"
 	cardInputDetails.ExpirationDate = "1812"
 	cardInputDetails.Number = "4507990000000010"
@@ -321,29 +321,29 @@ func SendCreatePaymentMethod(service *nps.PaymentServicePlatformPortType) error 
 	return nil
 }
 
-func CreatePaymentMethodToken(service *nps.PaymentServicePlatformPortType) error {
+func CreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	createPaymentMethodToken := nps.NewRequerimientoStruct_CreatePaymentMethodToken()
+	createPaymentMethodToken := npsSdk.NewRequerimientoStruct_CreatePaymentMethodToken()
 
 	createPaymentMethodToken.Psp_Version = "2.2"
 	createPaymentMethodToken.Psp_MerchantId = "psp_test"
 	createPaymentMethodToken.Psp_Product = "14"
 	createPaymentMethodToken.Psp_ClientSession = "ku4sGsxTKlbYQ9PJxwS4FGduR2YZdyMtQn8xcurxFRmCUuUXj6BP9wtYLAfcGJew"
 
-	cardInputDetails := nps.NewCardInputDetailsStruct()
+	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
 	cardInputDetails.ExpirationDate = "1812"
 	cardInputDetails.HolderName = "Silvina Falconi"
 	cardInputDetails.Number = "4507990000000010"
 	cardInputDetails.SecurityCode = "123"
 	createPaymentMethodToken.Psp_CardInputDetails = cardInputDetails
 
-	person := nps.NewPersonStruct()
+	person := npsSdk.NewPersonStruct()
 	person.FirstName = "Silvina"
 	person.LastName = "Falconi"
 	person.PhoneNumber1 = "52520960"
 	createPaymentMethodToken.Psp_Person = person
 
-	address := nps.NewAddressStruct()
+	address := npsSdk.NewAddressStruct()
 	address.Street = "pelegrini"
 	address.City = "CABA"
 	address.Country = "ARG"
@@ -361,41 +361,41 @@ func CreatePaymentMethodToken(service *nps.PaymentServicePlatformPortType) error
 	return nil
 }
 
-func SendBankPayment_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendBankPayment_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Taxes := nps.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*nps.TaxesRequestStruct, 0)
+	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
+	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := nps.NewTaxesRequestStruct()
+	tax1 := npsSdk.NewTaxesRequestStruct()
 	tax1.TypeId = "500"
 	tax1.Amount = "50"
 	tax1.Rate = "10"
 
 	Taxes.Items = append(Taxes.Items, tax1)
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 	AmountAdditionalDetails.Taxes = Taxes
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 	Person.IDNumber = "11111111"
 	Person.IDType = "100"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	BankPayment_2p := nps.NewRequerimientoStruct_BankPayment_2p()
+	BankPayment_2p := npsSdk.NewRequerimientoStruct_BankPayment_2p()
 	BankPayment_2p.Psp_Version = "2.2"
 	BankPayment_2p.Psp_Product = "320"
 	BankPayment_2p.Psp_MerchantId = "psp_test"
@@ -428,13 +428,13 @@ func SendBankPayment_2p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendSplitPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendSplitPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	VaultReference := nps.NewVaultReference2pStruct()
+	VaultReference := npsSdk.NewVaultReference2pStruct()
 	//VaultReference.CustomerId = "5555"
 	VaultReference.PaymentMethodToken = "pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG"
 
-	trn := nps.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
+	trn := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
 	trn.Psp_MerchantId = "psp_test"
 	trn.Psp_MerchTxRef = "ORDER66666-5"
 	trn.Psp_Product = "14"
@@ -442,7 +442,7 @@ func SendSplitPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
 	trn.Psp_NumPayments = "1"
 	trn.Psp_VaultReference = VaultReference
 
-	trn2 := nps.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
+	trn2 := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
 	trn2.Psp_MerchantId = "psp_test"
 	trn2.Psp_MerchTxRef = "ORDER66666-6"
 	trn2.Psp_Product = "14"
@@ -450,13 +450,13 @@ func SendSplitPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
 	trn2.Psp_NumPayments = "1"
 	trn2.Psp_VaultReference = VaultReference
 
-	Transactions := nps.NewArrayOf_RequerimientoStruct_SplitPayOnLine_2p_Transactions()
-	Transactions.Items = make([]*nps.RequerimientoStruct_SplitPayOnLine_2p_Transactions, 0)
+	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_2p_Transactions()
+	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitPayOnLine_2p_Transactions, 0)
 
 	Transactions.Items = append(Transactions.Items, trn)
 	Transactions.Items = append(Transactions.Items, trn2)
 
-	SplitPayOnLine_2p := nps.NewRequerimientoStruct_SplitPayOnLine_2p()
+	SplitPayOnLine_2p := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p()
 	SplitPayOnLine_2p.Psp_Version = "2.2"
 	SplitPayOnLine_2p.Psp_Product = "14"
 	SplitPayOnLine_2p.Psp_MerchantId = "psp_test"
@@ -485,61 +485,61 @@ func SendSplitPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendSplitAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendSplitAuthorize_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	SellerAddress := nps.NewAddressStruct()
+	SellerAddress := npsSdk.NewAddressStruct()
 	SellerAddress.City = "CABA"
 	SellerAddress.Country = "ARG"
 	SellerAddress.Street = "SellerStreet"
 	SellerAddress.HouseNumber = "1234"
 
-	SellerDetails := nps.NewSellerDetailsStruct()
+	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetails.Name = "Seller Name"
 	SellerDetails.Address = SellerAddress
 
-	MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
 	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
 	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	ShippingDetails := nps.NewShippingDetailsStruct()
+	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
-	ShippingAddress := nps.NewAddressStruct()
+	ShippingAddress := npsSdk.NewAddressStruct()
 	ShippingAddress.Street = "shipping street"
 	ShippingAddress.HouseNumber = "1234"
 	ShippingAddress.City = "CABA"
 	ShippingAddress.Country = "ARG"
 	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
 
-	PrimaryRecipient := nps.NewPersonStruct()
+	PrimaryRecipient := npsSdk.NewPersonStruct()
 	PrimaryRecipient.FirstName = "Pepe"
 	PrimaryRecipient.LastName = "Juan"
 
@@ -547,10 +547,10 @@ func SendSplitAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	ShippingDetails.Address = ShippingAddress
 	ShippingDetails.PrimaryRecipient = PrimaryRecipient
 
-	VaultReference := nps.NewVaultReference2pStruct()
+	VaultReference := npsSdk.NewVaultReference2pStruct()
 	VaultReference.PaymentMethodToken = "pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG"
 
-	trn := nps.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
+	trn := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
 	trn.Psp_MerchantId = "psp_test"
 	trn.Psp_MerchTxRef = "ORDER66666-5"
 	trn.Psp_Product = "14"
@@ -558,7 +558,7 @@ func SendSplitAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	trn.Psp_NumPayments = "1"
 	trn.Psp_VaultReference = VaultReference
 
-	trn2 := nps.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
+	trn2 := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
 	trn2.Psp_MerchantId = "psp_test"
 	trn2.Psp_MerchTxRef = "ORDER66666-6"
 	trn2.Psp_Product = "14"
@@ -566,13 +566,13 @@ func SendSplitAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	trn2.Psp_NumPayments = "1"
 	trn2.Psp_VaultReference = VaultReference
 
-	Transactions := nps.NewArrayOf_RequerimientoStruct_SplitAuthorize_2p_Transactions()
-	Transactions.Items = make([]*nps.RequerimientoStruct_SplitAuthorize_2p_Transactions, 0)
+	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_2p_Transactions()
+	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitAuthorize_2p_Transactions, 0)
 
 	Transactions.Items = append(Transactions.Items, trn)
 	Transactions.Items = append(Transactions.Items, trn2)
 
-	SplitAuthorize2p := nps.NewRequerimientoStruct_SplitAuthorize_2p()
+	SplitAuthorize2p := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p()
 
 	SplitAuthorize2p.Psp_Version = "2.2"
 	SplitAuthorize2p.Psp_MerchantId = "psp_test"
@@ -604,56 +604,56 @@ func SendSplitAuthorize_2p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendPayOnLine_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendPayOnLine_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "2017-06-29 12:00:00"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	SellerAddress := nps.NewAddressStruct()
+	SellerAddress := npsSdk.NewAddressStruct()
 	SellerAddress.City = "CABA"
 	SellerAddress.Country = "ARG"
 	SellerAddress.Street = "SellerStreet"
 	SellerAddress.HouseNumber = "1234"
 
-	SellerDetails := nps.NewSellerDetailsStruct()
+	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetails.Name = "Seller Name"
 	SellerDetails.Address = SellerAddress
 
-	MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
 	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
 	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	PayOnline3p := nps.NewRequerimientoStruct_PayOnLine_3p()
+	PayOnline3p := npsSdk.NewRequerimientoStruct_PayOnLine_3p()
 
 	PayOnline3p.Psp_Version = "2.2"
 	PayOnline3p.Psp_MerchantId = "psp_test"
@@ -688,61 +688,61 @@ func SendPayOnLine_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	SellerAddress := nps.NewAddressStruct()
+	SellerAddress := npsSdk.NewAddressStruct()
 	SellerAddress.City = "CABA"
 	SellerAddress.Country = "ARG"
 	SellerAddress.Street = "SellerStreet"
 	SellerAddress.HouseNumber = "1234"
 
-	SellerDetails := nps.NewSellerDetailsStruct()
+	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetails.Name = "Seller Name"
 	SellerDetails.Address = SellerAddress
 
-	MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
 	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
 	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	ShippingDetails := nps.NewShippingDetailsStruct()
+	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
-	ShippingAddress := nps.NewAddressStruct()
+	ShippingAddress := npsSdk.NewAddressStruct()
 	ShippingAddress.Street = "shipping street"
 	ShippingAddress.HouseNumber = "1234"
 	ShippingAddress.City = "CABA"
 	ShippingAddress.Country = "ARG"
 	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
 
-	PrimaryRecipient := nps.NewPersonStruct()
+	PrimaryRecipient := npsSdk.NewPersonStruct()
 	PrimaryRecipient.FirstName = "Pepe"
 	PrimaryRecipient.LastName = "Juan"
 
@@ -750,7 +750,7 @@ func SendAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
 	ShippingDetails.Address = ShippingAddress
 	ShippingDetails.PrimaryRecipient = PrimaryRecipient
 
-	Authorize3p := nps.NewRequerimientoStruct_Authorize_3p()
+	Authorize3p := npsSdk.NewRequerimientoStruct_Authorize_3p()
 
 	Authorize3p.Psp_Version = "2.2"
 	Authorize3p.Psp_MerchantId = "psp_test"
@@ -781,32 +781,32 @@ func SendAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendSplitAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendSplitAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	ShippingDetails := nps.NewShippingDetailsStruct()
+	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
-	ShippingAddress := nps.NewAddressStruct()
+	ShippingAddress := npsSdk.NewAddressStruct()
 	ShippingAddress.Street = "shipping street"
 	ShippingAddress.HouseNumber = "1234"
 	ShippingAddress.City = "CABA"
 	ShippingAddress.Country = "ARG"
 	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
 
-	PrimaryRecipient := nps.NewPersonStruct()
+	PrimaryRecipient := npsSdk.NewPersonStruct()
 	PrimaryRecipient.FirstName = "Pepe"
 	PrimaryRecipient.LastName = "Juan"
 
@@ -814,27 +814,27 @@ func SendSplitAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
 	ShippingDetails.Address = ShippingAddress
 	ShippingDetails.PrimaryRecipient = PrimaryRecipient
 
-	trn := nps.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
+	trn := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
 	trn.Psp_MerchantId = "psp_test"
 	trn.Psp_MerchTxRef = "ORDER66666-5"
 	trn.Psp_Product = "14"
 	trn.Psp_Amount = "10000"
 	trn.Psp_NumPayments = "1"
 
-	trn2 := nps.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
+	trn2 := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
 	trn2.Psp_MerchantId = "psp_test"
 	trn2.Psp_MerchTxRef = "ORDER66666-6"
 	trn2.Psp_Product = "14"
 	trn2.Psp_Amount = "5050"
 	trn2.Psp_NumPayments = "1"
 
-	Transactions := nps.NewArrayOf_RequerimientoStruct_SplitAuthorize_3p_Transactions()
-	Transactions.Items = make([]*nps.RequerimientoStruct_SplitAuthorize_3p_Transactions, 0)
+	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_3p_Transactions()
+	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitAuthorize_3p_Transactions, 0)
 
 	Transactions.Items = append(Transactions.Items, trn)
 	Transactions.Items = append(Transactions.Items, trn2)
 
-	SplitAuthorize3p := nps.NewRequerimientoStruct_SplitAuthorize_3p()
+	SplitAuthorize3p := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p()
 
 	SplitAuthorize3p.Psp_Version = "2.2"
 	SplitAuthorize3p.Psp_MerchantId = "psp_test"
@@ -864,41 +864,41 @@ func SendSplitAuthorize_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendBankPayment_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendBankPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Taxes := nps.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*nps.TaxesRequestStruct, 0)
+	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
+	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := nps.NewTaxesRequestStruct()
+	tax1 := npsSdk.NewTaxesRequestStruct()
 	tax1.TypeId = "500"
 	tax1.Amount = "50"
 	tax1.Rate = "10"
 
 	Taxes.Items = append(Taxes.Items, tax1)
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 	AmountAdditionalDetails.Taxes = Taxes
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 	Person.IDNumber = "11111111"
 	Person.IDType = "100"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	BankPayment_3p := nps.NewRequerimientoStruct_BankPayment_3p()
+	BankPayment_3p := npsSdk.NewRequerimientoStruct_BankPayment_3p()
 	BankPayment_3p.Psp_Version = "2.2"
 	BankPayment_3p.Psp_Product = "320"
 	BankPayment_3p.Psp_MerchantId = "psp_test"
@@ -934,55 +934,55 @@ func SendBankPayment_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendCashPayment_3p(service *nps.PaymentServicePlatformPortType) error {
+func SendCashPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Taxes := nps.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*nps.TaxesRequestStruct, 0)
+	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
+	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := nps.NewTaxesRequestStruct()
+	tax1 := npsSdk.NewTaxesRequestStruct()
 	tax1.TypeId = "500"
 	tax1.Amount = "50"
 	tax1.Rate = "10"
 
 	Taxes.Items = append(Taxes.Items, tax1)
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 	AmountAdditionalDetails.Taxes = Taxes
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 	Person.IDNumber = "11111111"
 	Person.IDType = "100"
 
-	Billing := nps.NewBillingDetailsStruct()
+	Billing := npsSdk.NewBillingDetailsStruct()
 	Billing.Invoice = "100001234"
 	//Billing.InvoiceDate = "20170601"
 	Billing.InvoiceAmount = "990"
 	Billing.InvoiceCurrency = "032"
 	Billing.Person = Person
 
-	CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
 
-	order1 := nps.NewOrderItemStruct()
+	order1 := npsSdk.NewOrderItemStruct()
 	order1.Description = "producto 1"
 	order1.UnitPrice = "10"
 
-	order2 := nps.NewOrderItemStruct()
+	order2 := npsSdk.NewOrderItemStruct()
 	order2.Description = "producto 2"
 	order2.UnitPrice = "20"
 
-	OrderDetails := nps.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+	OrderDetails := npsSdk.NewOrderDetailsStruct()
+	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
 	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	CashPayment_3p := nps.NewRequerimientoStruct_CashPayment_3p()
+	CashPayment_3p := npsSdk.NewRequerimientoStruct_CashPayment_3p()
 	CashPayment_3p.Psp_Version = "2.2"
 	CashPayment_3p.Psp_Product = "320"
 	CashPayment_3p.Psp_MerchantId = "psp_test"
@@ -1012,24 +1012,24 @@ func SendCashPayment_3p(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendCapture(service *nps.PaymentServicePlatformPortType) error {
+func SendCapture(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Taxes := nps.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*nps.TaxesRequestStruct, 0)
+	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
+	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := nps.NewTaxesRequestStruct()
+	tax1 := npsSdk.NewTaxesRequestStruct()
 	tax1.TypeId = "500"
 	tax1.Amount = "50"
 	tax1.Rate = "10"
 
 	Taxes.Items = append(Taxes.Items, tax1)
 
-	AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	AmountAdditionalDetails.Tip = "10"
 	AmountAdditionalDetails.Discount = "5"
 	AmountAdditionalDetails.Taxes = Taxes
 
-	Capture := nps.NewRequerimientoStruct_Capture()
+	Capture := npsSdk.NewRequerimientoStruct_Capture()
 	Capture.Psp_Version = "2.2"
 	Capture.Psp_MerchantId = "psp_test"
 	Capture.Psp_TxSource = "TxSource"
@@ -1052,9 +1052,9 @@ func SendCapture(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendRefund(service *nps.PaymentServicePlatformPortType) error {
+func SendRefund(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Refund := nps.NewRequerimientoStruct_Refund()
+	Refund := npsSdk.NewRequerimientoStruct_Refund()
 	Refund.Psp_Version = "2.2"
 	Refund.Psp_MerchantId = "psp_test"
 	Refund.Psp_TxSource = "TxSource"
@@ -1075,9 +1075,9 @@ func SendRefund(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendRetrievePaymentMethodToken(service *nps.PaymentServicePlatformPortType) error {
+func SendRetrievePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	RetrievePaymentMethodToken := nps.NewRequerimientoStruct_RetrievePaymentMethodToken()
+	RetrievePaymentMethodToken := npsSdk.NewRequerimientoStruct_RetrievePaymentMethodToken()
 	RetrievePaymentMethodToken.Psp_Version = "2.2"
 	RetrievePaymentMethodToken.Psp_MerchantId = "psp_test"
 	RetrievePaymentMethodToken.Psp_PaymentMethodToken = "FG2WE0mVhoOm4U2a1R8qsBe307mtiVy0"
@@ -1094,15 +1094,15 @@ func SendRetrievePaymentMethodToken(service *nps.PaymentServicePlatformPortType)
 	return nil
 }
 
-func SendCreatePaymentMethodToken(service *nps.PaymentServicePlatformPortType) error {
+func SendCreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	cardInputDetails := nps.NewCardInputDetailsStruct()
+	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
 	cardInputDetails.HolderName = "tester"
 	cardInputDetails.ExpirationDate = "1812"
 	cardInputDetails.Number = "4507990000000010"
 	cardInputDetails.SecurityCode = "123"
 
-	CreatePaymentMethodToken := nps.NewRequerimientoStruct_CreatePaymentMethodToken()
+	CreatePaymentMethodToken := npsSdk.NewRequerimientoStruct_CreatePaymentMethodToken()
 
 	CreatePaymentMethodToken.Psp_Version = "2.2"
 	CreatePaymentMethodToken.Psp_MerchantId = "psp_test"
@@ -1121,9 +1121,9 @@ func SendCreatePaymentMethodToken(service *nps.PaymentServicePlatformPortType) e
 	return nil
 }
 
-func SendRecachePaymentMethodToken(service *nps.PaymentServicePlatformPortType) error {
+func SendRecachePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	RecachePaymentMethodToken := nps.NewRequerimientoStruct_RecachePaymentMethodToken()
+	RecachePaymentMethodToken := npsSdk.NewRequerimientoStruct_RecachePaymentMethodToken()
 	RecachePaymentMethodToken.Psp_Version = "2.2"
 	RecachePaymentMethodToken.Psp_MerchantId = "psp_test"
 	RecachePaymentMethodToken.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
@@ -1141,9 +1141,9 @@ func SendRecachePaymentMethodToken(service *nps.PaymentServicePlatformPortType) 
 	return nil
 }
 
-func SendCreatePaymentMethodFromPayment(service *nps.PaymentServicePlatformPortType) error {
+func SendCreatePaymentMethodFromPayment(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	createPaymentMethodFromPayment := nps.NewRequerimientoStruct_CreatePaymentMethodFromPayment()
+	createPaymentMethodFromPayment := npsSdk.NewRequerimientoStruct_CreatePaymentMethodFromPayment()
 
 	createPaymentMethodFromPayment.Psp_Version = "2.2"
 	createPaymentMethodFromPayment.Psp_MerchantId = "psp_test"
@@ -1161,9 +1161,9 @@ func SendCreatePaymentMethodFromPayment(service *nps.PaymentServicePlatformPortT
 	return nil
 }
 
-func SendRetrievePaymentMethod(service *nps.PaymentServicePlatformPortType) error {
+func SendRetrievePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	RetrievePaymentMethod := nps.NewRequerimientoStruct_RetrievePaymentMethod()
+	RetrievePaymentMethod := npsSdk.NewRequerimientoStruct_RetrievePaymentMethod()
 	RetrievePaymentMethod.Psp_Version = "2.2"
 	RetrievePaymentMethod.Psp_MerchantId = "psp_test"
 	RetrievePaymentMethod.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
@@ -1180,16 +1180,16 @@ func SendRetrievePaymentMethod(service *nps.PaymentServicePlatformPortType) erro
 	return nil
 }
 
-func SendUpdatePaymentMethod(service *nps.PaymentServicePlatformPortType) error {
+func SendUpdatePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	UpdatePaymentMethod := nps.NewRequerimientoStruct_UpdatePaymentMethod()
+	UpdatePaymentMethod := npsSdk.NewRequerimientoStruct_UpdatePaymentMethod()
 
 	UpdatePaymentMethod.Psp_Version = "2.2"
 	UpdatePaymentMethod.Psp_MerchantId = "psp_test"
 	UpdatePaymentMethod.Psp_PosDateTime = "2017-06-19 12:00:00"
 
-	paymentMethod := nps.NewPaymentMethodInputDetailsStruct()
-	cardInputDetails := nps.NewCardInputDetailsStruct()
+	paymentMethod := npsSdk.NewPaymentMethodInputDetailsStruct()
+	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
 	cardInputDetails.HolderName = "tester"
 	cardInputDetails.ExpirationDate = "1812"
 	cardInputDetails.Number = "4507990000000010"
@@ -1210,9 +1210,9 @@ func SendUpdatePaymentMethod(service *nps.PaymentServicePlatformPortType) error 
 	return nil
 }
 
-func SendDeletePaymentMethod(service *nps.PaymentServicePlatformPortType) error {
+func SendDeletePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	DeletePaymentMethod := nps.NewRequerimientoStruct_DeletePaymentMethod()
+	DeletePaymentMethod := npsSdk.NewRequerimientoStruct_DeletePaymentMethod()
 
 	DeletePaymentMethod.Psp_Version = "2.2"
 	DeletePaymentMethod.Psp_MerchantId = "psp_test"
@@ -1230,35 +1230,35 @@ func SendDeletePaymentMethod(service *nps.PaymentServicePlatformPortType) error 
 	return nil
 }
 
-func SendCreateCustomer(service *nps.PaymentServicePlatformPortType) error {
+func SendCreateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	Address := nps.NewAddressStruct()
+	Address := npsSdk.NewAddressStruct()
 	Address.City = "CABA"
 	Address.Country = "ARG"
 	Address.Street = "SellerStreet"
 	Address.HouseNumber = "1234"
 
-	PmPerson := nps.NewPersonStruct()
+	PmPerson := npsSdk.NewPersonStruct()
 	PmPerson.FirstName = "Silvina"
 	PmPerson.LastName = "Falconi"
 	PmPerson.PhoneNumber1 = "52520960"
 
-	PmAddress := nps.NewAddressStruct()
+	PmAddress := npsSdk.NewAddressStruct()
 	PmAddress.City = "CABA"
 	PmAddress.Country = "ARG"
 	PmAddress.Street = "SellerStreet"
 	PmAddress.HouseNumber = "1234"
 
-	pm := nps.NewPaymentMethodInputDetailsStruct()
+	pm := npsSdk.NewPaymentMethodInputDetailsStruct()
 	pm.Address = PmAddress
 	pm.Person = PmPerson
 
-	CreateCustomer := nps.NewRequerimientoStruct_CreateCustomer()
+	CreateCustomer := npsSdk.NewRequerimientoStruct_CreateCustomer()
 
 	CreateCustomer.Psp_Version = "2.2"
 	CreateCustomer.Psp_MerchantId = "psp_test"
@@ -1280,9 +1280,9 @@ func SendCreateCustomer(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendRetrieveCustomer(service *nps.PaymentServicePlatformPortType) error {
+func SendRetrieveCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	RetrieveCustomer := nps.NewRequerimientoStruct_RetrieveCustomer()
+	RetrieveCustomer := npsSdk.NewRequerimientoStruct_RetrieveCustomer()
 
 	RetrieveCustomer.Psp_Version = "2.2"
 	RetrieveCustomer.Psp_MerchantId = "psp_test"
@@ -1300,35 +1300,35 @@ func SendRetrieveCustomer(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendUpdateCustomer(service *nps.PaymentServicePlatformPortType) error {
+func SendUpdateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	Person := nps.NewPersonStruct()
+	Person := npsSdk.NewPersonStruct()
 	Person.FirstName = "Silvina"
 	Person.LastName = "Falconi"
 	Person.PhoneNumber1 = "52520960"
 
-	Address := nps.NewAddressStruct()
+	Address := npsSdk.NewAddressStruct()
 	Address.City = "CABA"
 	Address.Country = "ARG"
 	Address.Street = "SellerStreet"
 	Address.HouseNumber = "1234"
 
-	PmPerson := nps.NewPersonStruct()
+	PmPerson := npsSdk.NewPersonStruct()
 	PmPerson.FirstName = "Silvina"
 	PmPerson.LastName = "Falconi"
 	PmPerson.PhoneNumber1 = "52520960"
 
-	PmAddress := nps.NewAddressStruct()
+	PmAddress := npsSdk.NewAddressStruct()
 	PmAddress.City = "CABA"
 	PmAddress.Country = "ARG"
 	PmAddress.Street = "SellerStreet"
 	PmAddress.HouseNumber = "1234"
 
-	pm := nps.NewPaymentMethodInputDetailsStruct()
+	pm := npsSdk.NewPaymentMethodInputDetailsStruct()
 	pm.Address = PmAddress
 	pm.Person = PmPerson
 
-	UpdateCustomer := nps.NewRequerimientoStruct_UpdateCustomer()
+	UpdateCustomer := npsSdk.NewRequerimientoStruct_UpdateCustomer()
 
 	UpdateCustomer.Psp_Version = "2.2"
 	UpdateCustomer.Psp_MerchantId = "psp_test"
@@ -1351,9 +1351,9 @@ func SendUpdateCustomer(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendDeleteCustomer(service *nps.PaymentServicePlatformPortType) error {
+func SendDeleteCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	DeleteCustomer := nps.NewRequerimientoStruct_DeleteCustomer()
+	DeleteCustomer := npsSdk.NewRequerimientoStruct_DeleteCustomer()
 
 	DeleteCustomer.Psp_Version = "2.2"
 	DeleteCustomer.Psp_MerchantId = "psp_test"
@@ -1371,9 +1371,9 @@ func SendDeleteCustomer(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendQueryCardNumber(service *nps.PaymentServicePlatformPortType) error {
+func SendQueryCardNumber(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	QueryCardNumber := nps.NewRequerimientoStruct_QueryCardNumber()
+	QueryCardNumber := npsSdk.NewRequerimientoStruct_QueryCardNumber()
 
 	QueryCardNumber.Psp_Version = "2.2"
 	QueryCardNumber.Psp_MerchantId = "psp_test"
@@ -1392,9 +1392,9 @@ func SendQueryCardNumber(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendQueryCardDetails(service *nps.PaymentServicePlatformPortType) error {
+func SendQueryCardDetails(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	QueryCardDetails := nps.NewRequerimientoStruct_QueryCardDetails()
+	QueryCardDetails := npsSdk.NewRequerimientoStruct_QueryCardDetails()
 
 	QueryCardDetails.Psp_Version = "2.2"
 	QueryCardDetails.Psp_MerchantId = "psp_test"
@@ -1413,9 +1413,9 @@ func SendQueryCardDetails(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendSimpleQueryTx(service *nps.PaymentServicePlatformPortType) error {
+func SendSimpleQueryTx(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	SimpleQueryTx := nps.NewRequerimientoStruct_SimpleQueryTx()
+	SimpleQueryTx := npsSdk.NewRequerimientoStruct_SimpleQueryTx()
 
 	SimpleQueryTx.Psp_Version = "2.2"
 	SimpleQueryTx.Psp_MerchantId = "psp_test"
@@ -1438,9 +1438,9 @@ func SendSimpleQueryTx(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendQueryTxs(service *nps.PaymentServicePlatformPortType) error {
+func SendQueryTxs(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	QueryTxs := nps.NewRequerimientoStruct_QueryTxs()
+	QueryTxs := npsSdk.NewRequerimientoStruct_QueryTxs()
 
 	QueryTxs.Psp_Version = "2.2"
 	QueryTxs.Psp_MerchantId = "psp_test"
@@ -1460,9 +1460,9 @@ func SendQueryTxs(service *nps.PaymentServicePlatformPortType) error {
 	return nil
 }
 
-func SendGetInstallmentsOptions(service *nps.PaymentServicePlatformPortType) error {
+func SendGetInstallmentsOptions(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	GetInstallmentsOptions := nps.NewRequerimientoStruct_GetInstallmentsOptions()
+	GetInstallmentsOptions := npsSdk.NewRequerimientoStruct_GetInstallmentsOptions()
 
 	GetInstallmentsOptions.Psp_Version = "2.2"
 	GetInstallmentsOptions.Psp_MerchantId = "psp_test"
@@ -1487,9 +1487,9 @@ func SendGetInstallmentsOptions(service *nps.PaymentServicePlatformPortType) err
 	return nil
 }
 
-func SendGetIINDetails(service *nps.PaymentServicePlatformPortType) error {
+func SendGetIINDetails(service *npsSdk.PaymentServicePlatformPortType) error {
 
-	GetIINDetails := nps.NewRequerimientoStruct_GetIINDetails()
+	GetIINDetails := npsSdk.NewRequerimientoStruct_GetIINDetails()
 
 	GetIINDetails.Psp_Version = "2.2"
 	GetIINDetails.Psp_MerchantId = "psp_test"
@@ -1523,7 +1523,7 @@ func main() {
 		appLog.Println("MAIN begin")
 	  **********************************************************************/
 
-	err := nps.Configure(map[string]interface{}{
+	err := npsSdk.Configure(map[string]interface{}{
 		"environment": CONSTANTS.SANDBOX_ENV,
 		"secret_key":  "IeShlZMDk8mp8VA6vy41mLnVggnj1yqHcJyNqIYaRINZnXdiTfhF0Ule9WNAUCR6",
 		"debug":       true,
@@ -1536,7 +1536,7 @@ func main() {
 		log.Fatalf("error configuring sdk: %v", err)
 	}
 
-	service := nps.NewPaymentServicePlatformPortType(true)
+	service := npsSdk.NewPaymentServicePlatformPortType(true)
 
 	//err = SendPayOnLine_2p(service)
 	//err = SendAuthorize_2p(service)
