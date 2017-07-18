@@ -18,13 +18,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	})
@@ -44,57 +44,57 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
-func SendPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
+func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
-  Person := nps.NewPersonStruct()
+  Person := npsSdk.NewPersonStruct()
   Person.FirstName = "First Name"
   Person.LastName = "Last Name"
   Person.PhoneNumber1 = "52520960"
   
-  AmountAdditionalDetails := nps.NewAmountAdditionalDetailsRequestStruct()
+  AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
   AmountAdditionalDetails.Tip = "10"
   AmountAdditionalDetails.Discount = "5"
   
-  Billing := nps.NewBillingDetailsStruct()
+  Billing := npsSdk.NewBillingDetailsStruct()
   Billing.Invoice = "100001234"
   Billing.InvoiceAmount = "990"
   Billing.InvoiceCurrency = "032"
   Billing.Person = Person
   
-  SellerAddress := nps.NewAddressStruct()
+  SellerAddress := npsSdk.NewAddressStruct()
   SellerAddress.City = "CABA"
   SellerAddress.Country = "ARG"
   SellerAddress.Street = "SellerStreet"
   SellerAddress.HouseNumber = "1234"
 
-  SellerDetails := nps.NewSellerDetailsStruct()
+  SellerDetails := npsSdk.NewSellerDetailsStruct()
   SellerDetails.Name = "Seller Name"
   SellerDetails.Address = SellerAddress
   
-  MerchantAdditionalDetails := nps.NewMerchantAdditionalDetailsStruct()
+  MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
   MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
   MerchantAdditionalDetails.SellerDetails = SellerDetails
-  CustomerAdditionalDetails := nps.NewCustomerAdditionalDetailsStruct()
+  CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
   CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
   
-  order1 := nps.NewOrderItemStruct()
+  order1 := npsSdk.NewOrderItemStruct()
   order1.Description = "producto 1"
   order1.UnitPrice = "10"
-  order2 := nps.NewOrderItemStruct()
+  order2 := npsSdk.NewOrderItemStruct()
   order2.Description = "producto 2"
   order2.UnitPrice = "20"
 
-  OrderDetails := nps.NewOrderDetailsStruct()
-  OrderDetails.OrderItems = nps.NewArrayOf_OrderItemStruct()
-  OrderDetails.OrderItems.Items = make([]*nps.OrderItemStruct, 0)
+  OrderDetails := npsSdk.NewOrderDetailsStruct()
+  OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+  OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
   OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
   OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-  payOnline2p := nps.NewRequerimientoStruct_PayOnLine_2p()
+  payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
 
   payOnline2p.Psp_Version = "2.2"
   payOnline2p.Psp_MerchantId = "psp_test"
@@ -131,7 +131,7 @@ func SendPayOnLine_2p(service *nps.PaymentServicePlatformPortType) error {
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	})
@@ -140,7 +140,7 @@ func main() {
 	log.Fatalf("error configuring sdk: %v", err)
   }
 
-  service := nps.NewPaymentServicePlatformPortType(true)
+  service := npsSdk.NewPaymentServicePlatformPortType(true)
 
   err = SendPayOnLine_2p(service)
 
@@ -161,21 +161,23 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	})
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.PRODUCTION_ENV,
 	})
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.STAGING_ENV,
 	})
+
+```
 
 ## Error handling
 
@@ -204,8 +206,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
@@ -219,7 +221,7 @@ func main() {
   appLog.SetOutput(f)
   appLog.Println("MAIN begin")
  
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "debug":       true,
@@ -237,13 +239,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "debug":       true,
@@ -259,13 +261,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "sanitize":    true,
@@ -283,13 +285,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "conn_timeout": 65,
@@ -306,13 +308,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"nps"
-	CONSTANTS "nps/constants"
+	"npsSdk"
+	CONSTANTS "npsSdk/constants"
 )
 
 func main() {
 
-  err := nps.Configure(map[string]interface{}{
+  err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "proxy_url": "http://yourproxy",
