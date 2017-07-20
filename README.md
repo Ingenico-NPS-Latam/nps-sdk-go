@@ -1,14 +1,14 @@
-# Go SDK
+#  Go SDK
 
-## Avalilability
+##  Avalilability
 Supports GO 1.7 and above
 
-## How to Install
+##  How to Install
 
 * [Download binary release](https://github.com/Ingenico-NPS-Latam/nps-sdk-go/releases)
 * Download and build locally: `go get github.com/Ingenico-NPS-Latam/nps-sdk-go/...`
 
-## Configuration
+##  Configuration
 
 It's a basic configuration of the SDK
 
@@ -153,7 +153,7 @@ func main() {
 
 ```
 
-## Environments
+##  Environments
 
 ```go
 package main
@@ -179,7 +179,7 @@ func main() {
 
 ```
 
-## Error handling
+##  Error handling
 
 All exceptions than can occur will be detailed inside of the response provided by NPS .
 
@@ -193,7 +193,7 @@ All exceptions than can occur will be detailed inside of the response provided b
   }
 ```
 
-## Advanced configurations
+##  Advanced configurations
 
 Nps SDK allows you to log what’s happening with you request inside of our SDK, it logs by default to stout.
 The SDK uses the custom logger that you use for your project.
