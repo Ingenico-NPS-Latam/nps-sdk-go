@@ -176,6 +176,7 @@ func main() {
   err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.STAGING_ENV,
 	})
+}
 
 ```
 
@@ -228,6 +229,7 @@ func main() {
 	  "log_level":   CONSTANTS.DEBUG,
 	  "npsLog":      appLog,      
 	})
+}
 ```
 
 The "INFO" level will write concise information of the request and will mask sensitive data of the request. 
@@ -251,6 +253,7 @@ func main() {
 	  "debug":       true,
 	  "log_level":   CONSTANTS.INFO,
 	})
+}
 ```
 
 Sanitize allows the SDK to truncate to a fixed size some fields that could make request fail, like extremely long name.
@@ -272,6 +275,7 @@ func main() {
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "sanitize":    true,
 	})
+}
 ```
 you can change the timeout of the request.
 
@@ -297,6 +301,7 @@ func main() {
 	  "conn_timeout": 65,
 	  "timeout": 65,
 	})
+}
 
 ```
 
@@ -321,5 +326,6 @@ func main() {
 	  "proxy_username": "proxyUsername",
 	  "proxy_password": "proxyPassword",
 	})
+}
 
 ```
