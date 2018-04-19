@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/constants"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 	"reflect"
 	"time"
 )

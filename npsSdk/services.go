@@ -2,10 +2,10 @@ package npsSdk
 
 import (
 	"encoding/xml"
-	CONSTANTS "npsSdk/constants"
-	productionPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/services/production"
-	sandboxPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/services/sandbox"
-	stagingPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/services/staging"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
+	productionPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/services/production"
+	sandboxPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/services/sandbox"
+	stagingPack "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/services/staging"
 	"time"
 )
 

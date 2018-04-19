@@ -3,7 +3,7 @@ package npsSdk
 import (
 	"errors"
 	"log"
-	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/constants"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 	"os"
 )
 
