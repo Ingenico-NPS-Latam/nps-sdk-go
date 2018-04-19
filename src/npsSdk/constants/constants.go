@@ -1,7 +1,7 @@
 package constants
 
 const (
-	SDK_VERSION                        = "1.1.2"
+	SDK_VERSION                        = "1.1.4"
 	SDK_NAME                           = "GOLANG SDK "
 	PAY_ONLINE_2P                      = "PayOnLine_2p"
 	AUTHORIZE_2P                       = "Authorize_2p"
