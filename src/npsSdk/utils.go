@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	CONSTANTS "npsSdk/constants"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/constants"
 	"reflect"
 	"sort"
 	"strings"

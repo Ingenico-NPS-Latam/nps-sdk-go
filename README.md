@@ -1,11 +1,11 @@
 #  Go SDK
+ 
 
 ##  Avalilability
 Supports GO 1.7 and above
 
 ##  How to Install
 
-* [Download binary release](https://github.com/Ingenico-NPS-Latam/nps-sdk-go/releases)
 * Download and build locally: `go get github.com/Ingenico-NPS-Latam/nps-sdk-go/...`
 
 ##  Configuration
@@ -327,5 +327,4 @@ func main() {
 	  "proxy_password": "proxyPassword",
 	})
 }
-
 ```

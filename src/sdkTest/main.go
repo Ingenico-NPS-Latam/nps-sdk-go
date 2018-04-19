@@ -4,82 +4,157 @@ import (
 	"fmt"
 	"log"
 	"npsSdk"
-	CONSTANTS "npsSdk/constants"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/constants"
+	"reflect"
+	"time"
 )
 
 func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
-
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+
+        fName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+        lName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+        phNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+
+        if fName.IsValid() { fName.SetString("Silvina") }
+        if lName.IsValid() { lName.SetString("Falconi") }
+        if phNumber1.IsValid() { phNumber1.SetString("52520960") }
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
+        tip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+        discount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+
+        if tip.IsValid() { tip.SetString("10") }
+        if discount.IsValid() { discount.SetString("5") }
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "2017-06-29 12:00:00"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        Invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+        InvoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+        InvoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+        BillingPerson := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+
+        if Invoice.IsValid() { Invoice.SetString("100001234") }
+        if InvoiceAmount.IsValid() { InvoiceAmount.SetString("990") }
+        if InvoiceCurrency.IsValid() { InvoiceCurrency.SetString("032") }
+        if BillingPerson.IsValid() { BillingPerson.Set(reflect.ValueOf(Person)) }
 
 	SellerAddress := npsSdk.NewAddressStruct()
-	SellerAddress.City = "CABA"
-	SellerAddress.Country = "ARG"
-	SellerAddress.Street = "SellerStreet"
-	SellerAddress.HouseNumber = "1234"
+        City := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
+        Country := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
+        Street := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
+        HouseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
+        
+        if City.IsValid() { City.SetString("CABA") }
+        if Country.IsValid() { Country.SetString("ARG") }
+        if Street.IsValid() { Street.SetString("SellerStreet") }
+        if HouseNumber.IsValid() { HouseNumber.SetString("1234") }
 
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetails.Name = "Seller Name"
-	SellerDetails.Address = SellerAddress
+        SellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
+        SellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
+
+        if SellerDetailsName.IsValid() { SellerDetailsName.SetString("Seller Name") }
+        if SellerDetailsAddress.IsValid() { SellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
 
 	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
-	MerchantAdditionalDetails.SellerDetails = SellerDetails
+        ShoppingCartInfo := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("ShoppingCartInfo")
+        MerchantAdditionalDetailsSellerDetails := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("SellerDetails")
+        
+        if ShoppingCartInfo.IsValid() { ShoppingCartInfo.SetString("ShoppingCartInfo") }
+        if MerchantAdditionalDetailsSellerDetails.IsValid() { MerchantAdditionalDetailsSellerDetails.Set(reflect.ValueOf(SellerDetails)) }
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
+	EmailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+        if EmailAddress.IsValid() { EmailAddress.SetString("mailAddr@mail.com.ar") }
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+      Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
+
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
+
+         Items.Set(reflect.Append(Items, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         Items.Set(reflect.Append(Items, order2))
+         order3 := reflect.New(sliceType)
+         order3.Elem().FieldByName("Description").SetString("producto 3") 
+         order3.Elem().FieldByName("UnitPrice").SetString("30") 
+
+         Items.Set(reflect.Append(Items, order3))
+
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
+	Psp_Version := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Version")
+	Psp_MerchantId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchantId")
+	Psp_TxSource := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_TxSource")
+	Psp_MerchTxRef := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchTxRef")
+	Psp_MerchOrderId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchOrderId")
+	Psp_Amount := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Amount")
+	Psp_NumPayments := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_NumPayments")
+	Psp_Currency := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Currency")
+	Psp_Country := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Country")
+	Psp_Product := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Product")
+	Psp_CustomerMail := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CustomerMail")
+	Psp_CardNumber := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardNumber")
+	Psp_CardExpDate := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardExpDate")
+	Psp_CardSecurityCode := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardSecurityCode")
+	Psp_SoftDescriptor := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_SoftDescriptor")
+	Psp_PosDateTime := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_PosDateTime")
 
-	payOnline2p.Psp_Version = "2.2"
-	payOnline2p.Psp_MerchantId = "psp_test"
-	payOnline2p.Psp_TxSource = "WEB"
-	payOnline2p.Psp_MerchTxRef = "ORDER56666-3"
-	payOnline2p.Psp_MerchOrderId = "ORDER56666"
-	payOnline2p.Psp_Amount = "1000"
-	payOnline2p.Psp_NumPayments = "1"
-	payOnline2p.Psp_Currency = "032"
-	payOnline2p.Psp_Country = "ARG"
-	payOnline2p.Psp_Product = "14"
-	payOnline2p.Psp_CustomerMail = "yourmail@gmail"
-	payOnline2p.Psp_CardNumber = "4507990000000010"
-	payOnline2p.Psp_CardExpDate = "1903"
-	payOnline2p.Psp_CardSecurityCode = "306"
-	payOnline2p.Psp_SoftDescriptor = "Sol Tropical E"
-	payOnline2p.Psp_PosDateTime = "2016-12-01 12:00:00"
+        Psp_UserId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_UserId")
+        if Psp_UserId.IsValid() { Psp_UserId.SetString("SFALCONI")} 
 
-	payOnline2p.Psp_OrderDetails = OrderDetails
-	payOnline2p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
-	payOnline2p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	payOnline2p.Psp_BillingDetails = Billing
-	payOnline2p.Psp_MerchantAdditionalDetails = MerchantAdditionalDetails
+	if Psp_Version.IsValid() { Psp_Version.SetString("2.2")}
+	if Psp_MerchantId.IsValid() { Psp_MerchantId.SetString("psp_test")}
+	if Psp_TxSource.IsValid() { Psp_TxSource.SetString("WEB")}
+        t := time.Now()
+ 	if Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+	//if Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString("ORDER56666-3")}
+
+	if Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("ORDER56666")}
+	if Psp_Amount.IsValid() { Psp_Amount.SetString("1000")}
+	if Psp_NumPayments.IsValid() { Psp_NumPayments.SetString("1")}
+	if Psp_Currency.IsValid() { Psp_Currency.SetString("032")}
+	if Psp_Country.IsValid() { Psp_Country.SetString("ARG")}
+	if Psp_Product.IsValid() { Psp_Product.SetString("14")}
+	if Psp_CustomerMail.IsValid() { Psp_CustomerMail.SetString("yourmail@gmail")}
+	if Psp_CardNumber.IsValid() { Psp_CardNumber.SetString("4507990000000010")}
+	if Psp_CardExpDate.IsValid() { Psp_CardExpDate.SetString("1903")}
+	if Psp_CardSecurityCode.IsValid() { Psp_CardSecurityCode.SetString("306")}
+	if Psp_SoftDescriptor.IsValid() { Psp_SoftDescriptor.SetString("Sol Tropical E")}
+	if Psp_PosDateTime.IsValid() { Psp_PosDateTime.SetString("2016-12-01 12:00:00")}
+
+	Psp_OrderDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_OrderDetails")
+	Psp_CustomerAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+	Psp_AmountAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+	Psp_BillingDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_BillingDetails")
+	Psp_MerchantAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchantAdditionalDetails")
+
+	if Psp_OrderDetails.IsValid() {  Psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+	if Psp_CustomerAdditionalDetails.IsValid() {  Psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+	if Psp_AmountAdditionalDetails.IsValid() {  Psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+	if Psp_BillingDetails.IsValid() {  Psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+	if Psp_MerchantAdditionalDetails.IsValid() {  Psp_MerchantAdditionalDetails.Set(reflect.ValueOf(MerchantAdditionalDetails)) }
 
 	resp, err := service.PayOnLine_2p(payOnline2p)
 	if err != nil {
@@ -87,8 +162,11 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
@@ -96,67 +174,116 @@ func SendSplitPayOnLine_3p(service *npsSdk.PaymentServicePlatformPortType) error
 
 	splitPayOnline3p := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p()
 
-	splitPayOnline3p.Psp_Version = "2.2"
-	splitPayOnline3p.Psp_MerchantId = "psp_test"
-	splitPayOnline3p.Psp_TxSource = "WEB"
-	splitPayOnline3p.Psp_MerchOrderId = "20170609134500"
-	splitPayOnline3p.Psp_ReturnURL = "http://localhost/"
-	splitPayOnline3p.Psp_FrmLanguage = "es_AR"
-	splitPayOnline3p.Psp_Amount = "15050"
-	splitPayOnline3p.Psp_Currency = "032"
-	splitPayOnline3p.Psp_Country = "ARG"
-	splitPayOnline3p.Psp_Product = "14"
-	splitPayOnline3p.Psp_PosDateTime = "2016-12-01 12:00:00"
+	Psp_Version := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Version")
+        if Psp_Version.IsValid() { Psp_Version.SetString("2.2") }
 
-	trn := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
-	trn.Psp_MerchantId = "psp_test"
-	trn.Psp_MerchTxRef = "ORDER66666-5"
-	trn.Psp_Product = "14"
-	trn.Psp_Amount = "10000"
-	trn.Psp_NumPayments = "1"
+	Psp_MerchantId := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_MerchantId")
+	if Psp_MerchantId.IsValid() { Psp_MerchantId.SetString("psp_test") }
 
-	trn2 := npsSdk.NewRequerimientoStruct_SplitPayOnLine_3p_Transactions()
-	trn2.Psp_MerchantId = "psp_test"
-	trn2.Psp_MerchTxRef = "ORDER66666-6"
-	trn2.Psp_Product = "14"
-	trn2.Psp_Amount = "5050"
-	trn2.Psp_NumPayments = "1"
+	Psp_TxSource :=  reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_TxSource")
+        if Psp_TxSource.IsValid() { Psp_TxSource.SetString("WEB") }
 
-	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_3p_Transactions()
-	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitPayOnLine_3p_Transactions, 0)
+	Psp_MerchOrderId := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_MerchOrderId")
+        if Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("20170609134500") }
 
-	Transactions.Items = append(Transactions.Items, trn)
-	Transactions.Items = append(Transactions.Items, trn2)
+	Psp_ReturnURL := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_ReturnURL")
+        if Psp_ReturnURL.IsValid() { Psp_ReturnURL.SetString("http://localhost/") }
 
-	splitPayOnline3p.Psp_Transactions = Transactions
+	Psp_FrmLanguage := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_FrmLanguage")
+        if Psp_FrmLanguage.IsValid() { Psp_FrmLanguage.SetString("es_AR") }
+
+	Psp_Amount := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Amount")
+ 	if Psp_Amount.IsValid() { Psp_Amount.SetString("15050") }
+
+	Psp_Currency := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Currency")
+	if Psp_Currency.IsValid() { Psp_Currency.SetString("032") }
+
+	Psp_Country := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Country")
+	if Psp_Country.IsValid() { Psp_Country.SetString("ARG") }
+
+	Psp_Product := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Product")
+	if Psp_Product.IsValid() { Psp_Product.SetString("14") }
+
+	Psp_PosDateTime := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_PosDateTime")
+	if Psp_PosDateTime.IsValid() { Psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+	Transactions := reflect.ValueOf(splitPayOnline3p).Elem().FieldByName("Psp_Transactions")
+
+	TransactionsArr := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_3p_Transactions()
+	Items := reflect.ValueOf(TransactionsArr).Elem().FieldByName("Items")
+
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
+
+         trn := reflect.New(sliceType)
+         trn.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-5") 
+         trn.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn.Elem().FieldByName("Psp_Amount").SetString("10000") 
+         trn.Elem().FieldByName("Psp_NumPayments").SetString("1") 
+
+         Items.Set(reflect.Append(Items, trn))
+
+         trn2 := reflect.New(sliceType)
+         trn2.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn2.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-6") 
+         trn2.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn2.Elem().FieldByName("Psp_Amount").SetString("5050") 
+         trn2.Elem().FieldByName("Psp_NumPayments").SetString("1") 
+
+         Items.Set(reflect.Append(Items, trn2))
+
+      }
+
+      if Transactions.IsValid() { Transactions.Set(reflect.ValueOf(TransactionsArr)) }
+
 
 	resp, err := service.SplitPayOnLine_3p(splitPayOnline3p)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 
-	for i := 0; i < len(resp.Psp_Transactions.Items); i++ {
-		f := resp.Psp_Transactions.Items[i]
-		fmt.Printf("========== item[%d]========== \n", i)
-		fmt.Printf("Psp_MerchantId         [%s]\n", f.Psp_MerchantId)
-		fmt.Printf("Psp_TransactionId      [%s]\n", f.Psp_TransactionId)
-		fmt.Printf("Psp_MerchTxRef         [%s]\n", f.Psp_MerchTxRef)
-		fmt.Printf("Psp_MerchAdditionalRef [%s]\n", f.Psp_MerchAdditionalRef)
-		fmt.Printf("Psp_Product            [%s]\n", f.Psp_Product)
-		fmt.Printf("Psp_PromotionCode      [%s]\n", f.Psp_PromotionCode)
-		fmt.Printf("Psp_Amount             [%s]\n", f.Psp_Amount)
-		fmt.Printf("Psp_NumPayments        [%s]\n", f.Psp_NumPayments)
-		fmt.Printf("Psp_Plan               [%s]\n", f.Psp_Plan)
-		fmt.Printf("Psp_FirstPaymentDeferral [%s]\n", f.Psp_FirstPaymentDeferral)
-		fmt.Printf("Psp_SoftDescriptor     [%s]\n", f.Psp_SoftDescriptor)
-		fmt.Printf("Psp_CreatedAt          [%s]\n", f.Psp_CreatedAt)
+        ptrTransactions := reflect.ValueOf(resp).Elem().FieldByName("Psp_Transactions")
+        respTransactions := ptrTransactions.Elem()
+        if respTransactions.IsValid() {
 
-	}
+	  RespItems := respTransactions.FieldByName("Items") //reflect.ValueOf(respTransactions).Elem().FieldByName("Items")
+          if RespItems.IsValid() {
 
+            fmt.Printf("RespItems = [%d]\n", RespItems.Len())
+            for i := 0; i < RespItems.Len(); i++ {
+  
+		idxtrn := RespItems.Index(i).Elem()
+
+		fmt.Printf("========== item[%d]= Kind[%s]========= \n", i, idxtrn.Kind().String())
+
+		fmt.Printf("Psp_MerchantId         [%s]\n", idxtrn.FieldByName("Psp_MerchantId").String())
+
+		fmt.Printf("Psp_TransactionId      [%s]\n", idxtrn.FieldByName("Psp_TransactionId").String())
+		fmt.Printf("Psp_MerchTxRef         [%s]\n", idxtrn.FieldByName("Psp_MerchTxRef").String())
+		fmt.Printf("Psp_MerchAdditionalRef [%s]\n", idxtrn.FieldByName("Psp_MerchAdditionalRef").String())
+		fmt.Printf("Psp_Product            [%s]\n", idxtrn.FieldByName("Psp_Product").String())
+		fmt.Printf("Psp_PromotionCode      [%s]\n", idxtrn.FieldByName("Psp_PromotionCode").String())
+		fmt.Printf("Psp_Amount             [%s]\n", idxtrn.FieldByName("Psp_Amount").String())
+		fmt.Printf("Psp_NumPayments        [%s]\n", idxtrn.FieldByName("Psp_NumPayments").String())
+		fmt.Printf("Psp_Plan               [%s]\n", idxtrn.FieldByName("Psp_Plan").String())
+		fmt.Printf("Psp_FirstPaymentDeferral [%s]\n", idxtrn.FieldByName("Psp_FirstPaymentDeferral").String())
+		fmt.Printf("Psp_SoftDescriptor     [%s]\n", idxtrn.FieldByName("Psp_SoftDescriptor").String())
+		fmt.Printf("Psp_CreatedAt          [%s]\n", idxtrn.FieldByName("Psp_CreatedAt").String())
+
+            }
+          }
+}
 	return nil
 }
 
@@ -164,110 +291,222 @@ func SendAuthorize_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	authorize2p := npsSdk.NewRequerimientoStruct_Authorize_2p()
 
-	authorize2p.Psp_Version = "2.2"
-	authorize2p.Psp_MerchantId = "psp_test"
-	authorize2p.Psp_TxSource = "WEB"
-	authorize2p.Psp_MerchTxRef = "20170630103600"
-	authorize2p.Psp_MerchOrderId = "20170630103600-1"
-	authorize2p.Psp_Amount = "15050"
-	authorize2p.Psp_NumPayments = "1"
-	authorize2p.Psp_Currency = "032"
-	authorize2p.Psp_Country = "ARG"
-	authorize2p.Psp_Product = "14"
-	authorize2p.Psp_CardNumber = "4507990000000010"
-	authorize2p.Psp_CardExpDate = "1812"
-	authorize2p.Psp_PosDateTime = "2016-12-01 12:00:00"
+	Psp_Version :=  reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_Version")
+	if  Psp_Version.IsValid() { Psp_Version.SetString("2.2") }
+
+	Psp_Merchant := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_MerchantId") 
+	if  Psp_Merchant.IsValid() { Psp_Merchant.SetString("psp_test") }
+
+	Psp_TxSource  := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_TxSource")
+	if  Psp_TxSource.IsValid() { Psp_TxSource.SetString("WEB") }
+
+	Psp_MerchTxRef := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_MerchTxRef") 
+	if  Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString("20170630103600") }
+
+	Psp_MerchOrderId := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_MerchOrderId") 
+	if  Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("20170630103600-1") }
+
+	Psp_Amount := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_Amount") 
+	if  Psp_Amount.IsValid() { Psp_Amount.SetString("15050") }
+
+	Psp_NumPayments := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_NumPayments") 
+	if  Psp_NumPayments.IsValid() { Psp_NumPayments.SetString("1") }
+
+	Psp_Currency := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_Currency") 
+	if  Psp_Currency.IsValid() {  Psp_Currency.SetString("032") }
+
+	Psp_Country := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_Country") 
+	if  Psp_Country.IsValid() { Psp_Country.SetString("ARG") }
+
+	Psp_Product := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_Product") 
+	if  Psp_Product.IsValid() { Psp_Product.SetString("14") }
+
+	Psp_CardNumber := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_CardNumber") 
+	if  Psp_CardNumber.IsValid() { Psp_CardNumber.SetString("4507990000000010") }
+
+	Psp_CardExpDate := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_CardExpDate") 
+	if  Psp_CardExpDate.IsValid() { Psp_CardExpDate.SetString("1812") }
+
+	Psp_PosDateTime := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_PosDateTime") 
+	if  Psp_PosDateTime.IsValid() { Psp_PosDateTime.SetString("2016-12-01 12:00:00") }
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+	EmailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
+ 	if EmailAddress.IsValid() { EmailAddress.SetString("CustomerEmail@email.com.ar") }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+	FirstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+ 	if FirstName.IsValid() { FirstName.SetString("Silvina") }
+
+	LastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+ 	if LastName.IsValid() { LastName.SetString("Falconi") }
+
+	PhoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+ 	if PhoneNumber1.IsValid() { PhoneNumber1.SetString("52520960") }
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+	Invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+ 	if Invoice.IsValid() { Invoice.SetString("100001234") }
+
+	InvoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+ 	if InvoiceAmount.IsValid() { InvoiceAmount.SetString("990") }
+
+	InvoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+ 	if InvoiceCurrency.IsValid() { InvoiceCurrency.SetString("032") }
+
+        billingPerson := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+ 	if billingPerson.IsValid() { billingPerson.Set(reflect.ValueOf(Person)) }
 
 	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := npsSdk.NewTaxesRequestStruct()
-	tax1.TypeId = "500"
-	tax1.Amount = "50"
-	tax1.Rate = "10"
+        Items := reflect.ValueOf(Taxes).Elem().FieldByName("Items")
+	if Items.Kind() == reflect.Slice {
+          st := Items.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
 
-	Taxes.Items = append(Taxes.Items, tax1)
+         tax1 := reflect.New(sliceType)
+         tax1.Elem().FieldByName("TypeId").SetString("500")
+         tax1.Elem().FieldByName("Amount").SetString("50")  
+         tax1.Elem().FieldByName("Rate").SetString("10")  
+         Items.Set(reflect.Append(Items, tax1))
+	}
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
-	AmountAdditionalDetails.Taxes = Taxes
+
+	amountAddTip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+	if amountAddTip.IsValid() { amountAddTip.SetString("10") }
+
+	amountAddDiscount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+	if amountAddDiscount.IsValid() { amountAddDiscount.SetString("5") }
+
+	amountAddTaxes := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Taxes")
+	if amountAddTaxes.IsValid() { amountAddTaxes.Set(reflect.ValueOf(Taxes)) }
 
 	SellerAddress := npsSdk.NewAddressStruct()
-	SellerAddress.City = "CABA"
-	SellerAddress.Country = "ARG"
-	SellerAddress.Street = "SellerStreet"
-	SellerAddress.HouseNumber = "1234"
+
+	sellerCity := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
+ 	if sellerCity.IsValid() { sellerCity.SetString("CABA") }
+
+	sellerCountry := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
+ 	if sellerCountry.IsValid() { sellerCountry.SetString("ARG") }
+
+	sellerStreet := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
+ 	if sellerStreet.IsValid() { sellerStreet.SetString("SellerStreet") }
+
+	sellerHouseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
+ 	if sellerHouseNumber.IsValid() { sellerHouseNumber.SetString("1234") }
 
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetails.Name = "Seller Name"
-	SellerDetails.Address = SellerAddress
+	sellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
+	if sellerDetailsName.IsValid() { sellerDetailsName.SetString("Seller Name") }
+
+	sellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
+
+	if sellerDetailsAddress.IsValid() { sellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
 
 	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
-	MerchantAdditionalDetails.SellerDetails = SellerDetails
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+	shoppingCartInfo := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("ShoppingCartInfo")
+	if shoppingCartInfo.IsValid() { shoppingCartInfo.SetString("ShoppingCartInfo") }
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+	merchantAdditionalDetailsSellerDetails := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("SellerDetails")
+	if merchantAdditionalDetailsSellerDetails.IsValid() { merchantAdditionalDetailsSellerDetails.Set(reflect.ValueOf(SellerDetails)) }
+
+        OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
+        orderItems := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	if orderItems.Kind() == reflect.Slice {
+          st := orderItems.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
+
+          order1 := reflect.New(sliceType)
+          order1.Elem().FieldByName("Description").SetString("producto 1")
+          order1.Elem().FieldByName("UnitPrice").SetString("10")
+
+          orderItems.Set(reflect.Append(orderItems, order1))
+
+          order2 := reflect.New(sliceType)
+          order2.Elem().FieldByName("Description").SetString("producto 2")
+          order2.Elem().FieldByName("UnitPrice").SetString("20")
+
+          orderItems.Set(reflect.Append(orderItems, order2))
+	}
 
 	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+	orderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+	if orderDetailsItems.IsValid() { orderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
 	ShippingAddress := npsSdk.NewAddressStruct()
-	ShippingAddress.Street = "shipping street"
-	ShippingAddress.HouseNumber = "1234"
-	ShippingAddress.City = "CABA"
-	ShippingAddress.Country = "ARG"
-	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
+
+	shippingAddressStreet := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Street")
+ 	if shippingAddressStreet.IsValid() { shippingAddressStreet.SetString("shipping street") }
+
+	shippingAddressHouseNumber := reflect.ValueOf(ShippingAddress).Elem().FieldByName("HouseNumber")
+ 	if shippingAddressHouseNumber.IsValid() { shippingAddressHouseNumber.SetString("1234") }
+
+	shippingAddressCity := reflect.ValueOf(ShippingAddress).Elem().FieldByName("City")
+ 	if shippingAddressCity.IsValid() { shippingAddressCity.SetString("CABA") }
+
+	shippingAddressCountry := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Country")
+ 	if shippingAddressCountry.IsValid() { shippingAddressCountry.SetString("ARG") }
+
+	shippingAddressAddInfo := reflect.ValueOf(ShippingAddress).Elem().FieldByName("AdditionalInfo")
+ 	if shippingAddressAddInfo.IsValid() { shippingAddressAddInfo.SetString("AdditionalInfo of shipping") }
+
 
 	PrimaryRecipient := npsSdk.NewPersonStruct()
-	PrimaryRecipient.FirstName = "Pepe"
-	PrimaryRecipient.LastName = "Juan"
 
-	ShippingDetails.Method = "10"
-	ShippingDetails.Address = ShippingAddress
-	ShippingDetails.PrimaryRecipient = PrimaryRecipient
+	primRecFirstName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("FirstName")
+ 	if primRecFirstName.IsValid() { primRecFirstName.SetString("Pepe") }
 
-	authorize2p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	authorize2p.Psp_BillingDetails = Billing
-	authorize2p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
-	authorize2p.Psp_MerchantAdditionalDetails = MerchantAdditionalDetails
-	authorize2p.Psp_OrderDetails = OrderDetails
-	authorize2p.Psp_ShippingDetails = ShippingDetails
+	primRecLastName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("LastName")
+ 	if primRecLastName.IsValid() { primRecLastName.SetString("Juan") }
+
+	shippingDetailsMethod := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Method")
+ 	if shippingDetailsMethod.IsValid() { shippingDetailsMethod.SetString("10") }
+
+	shippingDetailsAddress := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Address")
+ 	if shippingDetailsAddress.IsValid() { shippingDetailsAddress.Set(reflect.ValueOf(ShippingAddress)) }
+
+	shippingDetailsPrimaryRecipient := reflect.ValueOf(ShippingDetails).Elem().FieldByName("PrimaryRecipient")
+ 	if shippingDetailsPrimaryRecipient.IsValid() { shippingDetailsPrimaryRecipient.Set(reflect.ValueOf(PrimaryRecipient)) }
+
+	psp_AmountAdditionalDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+ 	if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+
+	psp_BillingDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_BillingDetails")
+ 	if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+	psp_CustomerAdditionalDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+ 	if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+
+	psp_MerchantAdditionalDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_MerchantAdditionalDetails")
+ 	if psp_MerchantAdditionalDetails.IsValid() { psp_MerchantAdditionalDetails.Set(reflect.ValueOf(MerchantAdditionalDetails)) }
+
+	psp_OrderDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_OrderDetails")
+ 	if psp_OrderDetails.IsValid() { psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+
+	psp_ShippingDetails := reflect.ValueOf(authorize2p).Elem().FieldByName("Psp_ShippingDetails")
+ 	if psp_ShippingDetails.IsValid() { psp_ShippingDetails.Set(reflect.ValueOf(ShippingDetails)) }
 
 	resp, err := service.Authorize_2p(authorize2p)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
+
 	return nil
 }
 
@@ -275,19 +514,28 @@ func SendCreateClientSession(service *npsSdk.PaymentServicePlatformPortType) err
 
 	createClientSession := npsSdk.NewRequerimientoStruct_CreateClientSession()
 
-	createClientSession.Psp_Version = "2.2"
-	createClientSession.Psp_MerchantId = "psp_test"
-	createClientSession.Psp_PosDateTime = "2017-06-19 12:00:00"
+	psp_Version := reflect.ValueOf(createClientSession).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_MerchantId := reflect.ValueOf(createClientSession).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(createClientSession).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
 
 	resp, err := service.CreateClientSession(createClientSession)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-	fmt.Printf("ClientSession = [%s]\n", resp.Psp_ClientSession)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        Psp_ClientSession := reflect.ValueOf(resp).Elem().FieldByName("Psp_ClientSession")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
+	fmt.Printf("ClientSession = [%s]\n", Psp_ClientSession.String())
+
 	return nil
 }
 
@@ -295,60 +543,111 @@ func SendCreatePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) err
 
 	createPaymentMethod := npsSdk.NewRequerimientoStruct_CreatePaymentMethod()
 
-	createPaymentMethod.Psp_Version = "2.2"
-	createPaymentMethod.Psp_MerchantId = "psp_test"
-	createPaymentMethod.Psp_PosDateTime = "2017-06-19 12:00:00"
+	psp_Version := reflect.ValueOf(createPaymentMethod).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	paymentMethod := npsSdk.NewPaymentMethodInputDetailsStruct()
-	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
-	cardInputDetails.HolderName = "tester"
-	cardInputDetails.ExpirationDate = "1812"
-	cardInputDetails.Number = "4507990000000010"
-	cardInputDetails.SecurityCode = "123"
+	psp_MerchantId := reflect.ValueOf(createPaymentMethod).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	paymentMethod.CardInputDetails = cardInputDetails
+	psp_PosDateTime := reflect.ValueOf(createPaymentMethod).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
 
-	createPaymentMethod.Psp_PaymentMethod = paymentMethod
+	PaymentMethod := npsSdk.NewPaymentMethodInputDetailsStruct()
+
+	CardInputDetails := npsSdk.NewCardInputDetailsStruct()
+
+        holderName := reflect.ValueOf(CardInputDetails).Elem().FieldByName("HolderName")
+	if holderName.IsValid() { holderName.SetString("tester") }
+
+        expirationDate := reflect.ValueOf(CardInputDetails).Elem().FieldByName("ExpirationDate")
+	if expirationDate.IsValid() { expirationDate.SetString("1812") }
+
+        cardNumber := reflect.ValueOf(CardInputDetails).Elem().FieldByName("Number")
+	if cardNumber.IsValid() { cardNumber.SetString("4507990000000010") }
+
+        securityCode := reflect.ValueOf(CardInputDetails).Elem().FieldByName("SecurityCode")
+	if securityCode.IsValid() { securityCode.SetString("123") }
+
+	cardInputDetails := reflect.ValueOf(PaymentMethod).Elem().FieldByName("CardInputDetails")
+	if cardInputDetails.IsValid() { cardInputDetails.Set(reflect.ValueOf(CardInputDetails)) }
+
+	psp_PaymentMethod := reflect.ValueOf(createPaymentMethod).Elem().FieldByName("Psp_PaymentMethod")
+	if psp_PaymentMethod.IsValid() { psp_PaymentMethod.Set(reflect.ValueOf(PaymentMethod)) }
 
 	resp, err := service.CreatePaymentMethod(createPaymentMethod)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
-func CreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
+func SendCreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	createPaymentMethodToken := npsSdk.NewRequerimientoStruct_CreatePaymentMethodToken()
+	psp_Version := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	createPaymentMethodToken.Psp_Version = "2.2"
-	createPaymentMethodToken.Psp_MerchantId = "psp_test"
-	createPaymentMethodToken.Psp_Product = "14"
-	createPaymentMethodToken.Psp_ClientSession = "ku4sGsxTKlbYQ9PJxwS4FGduR2YZdyMtQn8xcurxFRmCUuUXj6BP9wtYLAfcGJew"
+	psp_MerchantId := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
-	cardInputDetails.ExpirationDate = "1812"
-	cardInputDetails.HolderName = "Silvina Falconi"
-	cardInputDetails.Number = "4507990000000010"
-	cardInputDetails.SecurityCode = "123"
-	createPaymentMethodToken.Psp_CardInputDetails = cardInputDetails
+	psp_PosDateTime := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_ClientSession := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_ClientSession")
+	if psp_ClientSession.IsValid() { psp_ClientSession.SetString("w9mXsBXOlK5mx340F9WsXVoCTUsila2lqTBeqTwezfkbTt0li4NLXrFeFsbfXO9J") }
+
+	CardInputDetails := npsSdk.NewCardInputDetailsStruct()
+
+        holderName := reflect.ValueOf(CardInputDetails).Elem().FieldByName("HolderName")
+	if holderName.IsValid() { holderName.SetString("tester") }
+
+        expirationDate := reflect.ValueOf(CardInputDetails).Elem().FieldByName("ExpirationDate")
+	if expirationDate.IsValid() { expirationDate.SetString("1812") }
+
+        cardNumber := reflect.ValueOf(CardInputDetails).Elem().FieldByName("Number")
+	if cardNumber.IsValid() { cardNumber.SetString("4507990000000010") }
+
+        securityCode := reflect.ValueOf(CardInputDetails).Elem().FieldByName("SecurityCode")
+	if securityCode.IsValid() { securityCode.SetString("123") }
+
+	cardInputDetails := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_CardInputDetails")
+	if cardInputDetails.IsValid() { cardInputDetails.Set(reflect.ValueOf(CardInputDetails)) }
 
 	person := npsSdk.NewPersonStruct()
-	person.FirstName = "Silvina"
-	person.LastName = "Falconi"
-	person.PhoneNumber1 = "52520960"
-	createPaymentMethodToken.Psp_Person = person
+        firstName := reflect.ValueOf(person).Elem().FieldByName("FirstName")
+	if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(person).Elem().FieldByName("LastName")
+	if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(person).Elem().FieldByName("PhoneNumber1")
+	if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
+
+	psp_Person := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_Person")
+	if psp_Person.IsValid() { psp_Person.Set(reflect.ValueOf(person)) }
 
 	address := npsSdk.NewAddressStruct()
-	address.Street = "pelegrini"
-	address.City = "CABA"
-	address.Country = "ARG"
-	address.HouseNumber = "1111"
-	createPaymentMethodToken.Psp_Address = address
+        street := reflect.ValueOf(address).Elem().FieldByName("Street")
+	if street.IsValid() { street.SetString("pelegrini") }
+
+        city := reflect.ValueOf(address).Elem().FieldByName("City")
+	if city.IsValid() { city.SetString("CABA") }
+
+        country := reflect.ValueOf(address).Elem().FieldByName("Country")
+	if country.IsValid() { country.SetString("ARG") }
+
+        houseNumber := reflect.ValueOf(address).Elem().FieldByName("HouseNumber")
+	if houseNumber.IsValid() { houseNumber.SetString("1111") }
+
+	psp_Address := reflect.ValueOf(createPaymentMethodToken).Elem().FieldByName("Psp_Address")
+	if psp_Address.IsValid() { psp_Address.Set(reflect.ValueOf(address)) }
+
 
 	resp, err := service.CreatePaymentMethodToken(createPaymentMethodToken)
 	if err != nil {
@@ -356,66 +655,131 @@ func CreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) er
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendBankPayment_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := npsSdk.NewTaxesRequestStruct()
-	tax1.TypeId = "500"
-	tax1.Amount = "50"
-	tax1.Rate = "10"
+        Items := reflect.ValueOf(Taxes).Elem().FieldByName("Items")
+	if Items.Kind() == reflect.Slice {
+          st := Items.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
 
-	Taxes.Items = append(Taxes.Items, tax1)
+         tax1 := reflect.New(sliceType)
+         tax1.Elem().FieldByName("TypeId").SetString("500")
+         tax1.Elem().FieldByName("Amount").SetString("50")  
+         tax1.Elem().FieldByName("Rate").SetString("10")  
+         Items.Set(reflect.Append(Items, tax1))
+	}
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
-	AmountAdditionalDetails.Taxes = Taxes
+
+	amountAddTip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+	if amountAddTip.IsValid() { amountAddTip.SetString("10") }
+
+	amountAddDiscount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+	if amountAddDiscount.IsValid() { amountAddDiscount.SetString("5") }
+
+	amountAddTaxes := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Taxes")
+	if amountAddTaxes.IsValid() { amountAddTaxes.Set(reflect.ValueOf(Taxes)) }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
-	Person.IDNumber = "11111111"
-	Person.IDType = "100"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+	if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+	if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+	if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
+
+        idNumber := reflect.ValueOf(Person).Elem().FieldByName("IDNumber")
+	if idNumber.IsValid() { idNumber.SetString("11111111") }
+
+        idType := reflect.ValueOf(Person).Elem().FieldByName("IDType")
+	if idType.IsValid() { idType.SetString("100") }
+
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+	if invoice.IsValid() { invoice.SetString("100001234") }
+
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+	if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+	if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+
+        person := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(Person)) }
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+
+        emailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
+	if emailAddress.IsValid() { emailAddress.SetString("CustomerEmail@email.com.ar") }
 
 	BankPayment_2p := npsSdk.NewRequerimientoStruct_BankPayment_2p()
-	BankPayment_2p.Psp_Version = "2.2"
-	BankPayment_2p.Psp_Product = "320"
-	BankPayment_2p.Psp_MerchantId = "psp_test"
-	BankPayment_2p.Psp_TxSource = "TxSource"
-	BankPayment_2p.Psp_MerchTxRef = "11111"
-	BankPayment_2p.Psp_MerchOrderId = "ORD-10001"
-	BankPayment_2p.Psp_ScreenDescription = "SCR DESC"
-	BankPayment_2p.Psp_TicketDescription = "ticket desc"
-	BankPayment_2p.Psp_CustomerBankId = "HSBC"
+	psp_Version := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	BankPayment_2p.Psp_Amount1 = "10000"
-	BankPayment_2p.Psp_Amount2 = "20000"
-	BankPayment_2p.Psp_Country = "ARG"
-	BankPayment_2p.Psp_Currency = "032"
-	BankPayment_2p.Psp_PosDateTime = "2016-12-01 12:00:00"
-	BankPayment_2p.Psp_TxSource = "WEB"
+	psp_Product := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
 
-	BankPayment_2p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	BankPayment_2p.Psp_BillingDetails = Billing
-	BankPayment_2p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
+	psp_MerchantId := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_MerchTxRef := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_MerchTxRef")
+        t := time.Now()
+ 	if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+
+	psp_MerchOrderId := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-10001") }
+
+	psp_ScreenDescription := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_ScreenDescription")
+	if psp_ScreenDescription.IsValid() { psp_ScreenDescription.SetString("CR DESC") }
+
+	psp_TicketDescription := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_TicketDescription")
+	if psp_TicketDescription.IsValid() { psp_TicketDescription.SetString("ticket desc") }
+
+	psp_CustomerBankId := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_CustomerBankId")
+	if psp_CustomerBankId.IsValid() { psp_CustomerBankId.SetString("HSBC") }
+
+	psp_Amount1 := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Amount1")
+	if psp_Amount1.IsValid() { psp_Amount1.SetString("10000") }
+
+	psp_Amount2 := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Amount2")
+	if psp_Amount2.IsValid() { psp_Amount2.SetString("20000") }
+
+	psp_Country := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Country")
+	if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+	psp_Currency := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_Currency")
+	if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+	psp_PosDateTime := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_TxSource := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_AmountAdditionalDetails := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+	if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+
+	psp_BillingDetails := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_BillingDetails")
+	if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+	psp_CustomerAdditionalDetails := reflect.ValueOf(BankPayment_2p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+	if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
 
 	resp, err := service.BankPayment_2p(BankPayment_2p)
 	if err != nil {
@@ -423,56 +787,95 @@ func SendBankPayment_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendSplitPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	VaultReference := npsSdk.NewVaultReference2pStruct()
-	//VaultReference.CustomerId = "5555"
-	VaultReference.PaymentMethodToken = "pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG"
+	paymentMethodToken := reflect.ValueOf(VaultReference).Elem().FieldByName("PaymentMethodToken")
+	if paymentMethodToken.IsValid() { paymentMethodToken.SetString("pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG") }
 
-	trn := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
-	trn.Psp_MerchantId = "psp_test"
-	trn.Psp_MerchTxRef = "ORDER66666-5"
-	trn.Psp_Product = "14"
-	trn.Psp_Amount = "10000"
-	trn.Psp_NumPayments = "1"
-	trn.Psp_VaultReference = VaultReference
+	TransactionsArr := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_2p_Transactions()
+	Items := reflect.ValueOf(TransactionsArr).Elem().FieldByName("Items")
 
-	trn2 := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p_Transactions()
-	trn2.Psp_MerchantId = "psp_test"
-	trn2.Psp_MerchTxRef = "ORDER66666-6"
-	trn2.Psp_Product = "14"
-	trn2.Psp_Amount = "5050"
-	trn2.Psp_NumPayments = "1"
-	trn2.Psp_VaultReference = VaultReference
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitPayOnLine_2p_Transactions()
-	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitPayOnLine_2p_Transactions, 0)
+         trn := reflect.New(sliceType)
+         trn.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-5") 
+         trn.Elem().FieldByName("Psp_Product").SetString("55") 
+         trn.Elem().FieldByName("Psp_Amount").SetString("10000") 
+         trn.Elem().FieldByName("Psp_NumPayments").SetString("1") 
 
-	Transactions.Items = append(Transactions.Items, trn)
-	Transactions.Items = append(Transactions.Items, trn2)
+         Items.Set(reflect.Append(Items, trn))
 
-	SplitPayOnLine_2p := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p()
-	SplitPayOnLine_2p.Psp_Version = "2.2"
-	SplitPayOnLine_2p.Psp_Product = "14"
-	SplitPayOnLine_2p.Psp_MerchantId = "psp_test"
-	SplitPayOnLine_2p.Psp_Amount = "1000"
-	SplitPayOnLine_2p.Psp_CardHolderName = "holder"
-	SplitPayOnLine_2p.Psp_CardNumber = "4507990000000010"
-	SplitPayOnLine_2p.Psp_CardExpDate = "1903"
-	SplitPayOnLine_2p.Psp_CardSecurityCode = "306"
-	SplitPayOnLine_2p.Psp_TxSource = "WEB"
-	SplitPayOnLine_2p.Psp_MerchOrderId = "ORD-20170629123000"
-	SplitPayOnLine_2p.Psp_Currency = "032"
-	SplitPayOnLine_2p.Psp_Country = "ARG"
-	SplitPayOnLine_2p.Psp_PosDateTime = "2016-12-01 12:00:00"
+         trn2 := reflect.New(sliceType)
+         trn2.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn2.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-6") 
+         trn2.Elem().FieldByName("Psp_Product").SetString("23") 
+         trn2.Elem().FieldByName("Psp_Amount").SetString("5050") 
+         trn2.Elem().FieldByName("Psp_NumPayments").SetString("1") 
 
-	//SplitPayOnLine_2p.Psp_VaultReference = VaultReference
-	SplitPayOnLine_2p.Psp_Transactions = Transactions
+         Items.Set(reflect.Append(Items, trn2))
+
+      }
+
+      SplitPayOnLine_2p := npsSdk.NewRequerimientoStruct_SplitPayOnLine_2p()
+
+      Transactions := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Transactions")
+      if Transactions.IsValid() { Transactions.Set(reflect.ValueOf(TransactionsArr)) }
+
+	psp_Version := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_Product := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
+
+	psp_MerchantId := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_Amount := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Amount")
+	if psp_Amount.IsValid() { psp_Amount.SetString("1000") }
+
+	psp_CardHolderName := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_CardHolderName")
+	if psp_CardHolderName.IsValid() { psp_CardHolderName.SetString("holder") }
+
+	psp_CardNumber := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_CardNumber")
+	if psp_CardNumber.IsValid() { psp_CardNumber.SetString("4507990000000010") }
+
+	psp_CardExpDate := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_CardExpDate")
+	if psp_CardExpDate.IsValid() { psp_CardExpDate.SetString("1903") }
+
+	psp_CardSecurityCode := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_CardSecurityCode")
+	if psp_CardSecurityCode.IsValid() { psp_CardSecurityCode.SetString("306") }
+
+	psp_TxSource := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_MerchOrderId := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-20170629123000") }
+
+	psp_Currency := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Currency")
+	if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+	psp_Country := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_Country")
+	if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+	psp_PosDateTime := reflect.ValueOf(SplitPayOnLine_2p).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
 
 	resp, err := service.SplitPayOnLine_2p(SplitPayOnLine_2p)
 	if err != nil {
@@ -480,118 +883,229 @@ func SendSplitPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendSplitAuthorize_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+	emailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
+	if emailAddress.IsValid() { emailAddress.SetString("CustomerEmail@email.com.ar") }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+	if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+	if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+	if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
+
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+	if invoice.IsValid() { invoice.SetString("100001234") }
+
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+	if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+	if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+
+        person := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(Person)) }
+
 
 	SellerAddress := npsSdk.NewAddressStruct()
-	SellerAddress.City = "CABA"
-	SellerAddress.Country = "ARG"
-	SellerAddress.Street = "SellerStreet"
-	SellerAddress.HouseNumber = "1234"
+        sellerAddressCity := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
+	if sellerAddressCity.IsValid() { sellerAddressCity.SetString("CABA") }
 
+        sellerAddressCountry := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
+	if sellerAddressCountry.IsValid() { sellerAddressCountry.SetString("ARG") }
+
+        sellerAddressStreet := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
+	if sellerAddressStreet.IsValid() { sellerAddressStreet.SetString("SellerStreet") }
+
+        sellerAddressHouseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
+	if sellerAddressHouseNumber.IsValid() { sellerAddressHouseNumber.SetString("1234") }
+        
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetails.Name = "Seller Name"
-	SellerDetails.Address = SellerAddress
+        sellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
+	if sellerDetailsName.IsValid() { sellerDetailsName.SetString("Seller Name") }
+
+        sellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
+	if sellerDetailsAddress.IsValid() { sellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
+
 
 	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
-	MerchantAdditionalDetails.SellerDetails = SellerDetails
+        shoppingCartInfo := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("ShoppingCartInfo")
+	if shoppingCartInfo.IsValid() { shoppingCartInfo.SetString("ShoppingCartInfo") }
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+        sellerDetails := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("SellerDetails")
+	if sellerDetails.IsValid() { sellerDetails.Set(reflect.ValueOf(SellerDetails)) }
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+      Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
+
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
+
+         Items.Set(reflect.Append(Items, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         Items.Set(reflect.Append(Items, order2))
+         order3 := reflect.New(sliceType)
+         order3.Elem().FieldByName("Description").SetString("producto 3") 
+         order3.Elem().FieldByName("UnitPrice").SetString("30") 
+
+         Items.Set(reflect.Append(Items, order3))
+
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
 	ShippingAddress := npsSdk.NewAddressStruct()
-	ShippingAddress.Street = "shipping street"
-	ShippingAddress.HouseNumber = "1234"
-	ShippingAddress.City = "CABA"
-	ShippingAddress.Country = "ARG"
-	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
+        shippingAddressStreet := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Street")
+	if shippingAddressStreet.IsValid() { shippingAddressStreet.SetString("shipping street") }
+
+        shippingAddressHouseNumber := reflect.ValueOf(ShippingAddress).Elem().FieldByName("HouseNumber")
+	if shippingAddressHouseNumber.IsValid() { shippingAddressHouseNumber.SetString("1234") }
+
+        shippingAddressHouseCity := reflect.ValueOf(ShippingAddress).Elem().FieldByName("City")
+	if shippingAddressHouseCity.IsValid() { shippingAddressHouseCity.SetString("CABA") }
+
+        shippingAddressHouseCountry := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Country")
+	if shippingAddressHouseCountry.IsValid() { shippingAddressHouseCountry.SetString("ARG") }
+
+        additionalInfo := reflect.ValueOf(ShippingAddress).Elem().FieldByName("AdditionalInfo")
+	if additionalInfo.IsValid() { additionalInfo.SetString("AdditionalInfo of shipping") }
+
 
 	PrimaryRecipient := npsSdk.NewPersonStruct()
-	PrimaryRecipient.FirstName = "Pepe"
-	PrimaryRecipient.LastName = "Juan"
+        primaryRecipientFirstName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("FirstName")
+	if primaryRecipientFirstName.IsValid() { primaryRecipientFirstName.SetString("Pepe") }
 
-	ShippingDetails.Method = "10"
-	ShippingDetails.Address = ShippingAddress
-	ShippingDetails.PrimaryRecipient = PrimaryRecipient
+        primaryRecipientFirstNameLastName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("LastName")
+	if primaryRecipientFirstNameLastName.IsValid() { primaryRecipientFirstNameLastName.SetString("Juan") }
+
+        shippingDetailsMethod := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Method")
+	if shippingDetailsMethod.IsValid() { shippingDetailsMethod.SetString("10") }
+
+        shippingDetailsAddress := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Address")
+	if shippingDetailsAddress.IsValid() { shippingDetailsAddress.Set(reflect.ValueOf(ShippingAddress)) }
+
+        shippingDetailsPrimaryRecipient := reflect.ValueOf(ShippingDetails).Elem().FieldByName("PrimaryRecipient")
+	if shippingDetailsPrimaryRecipient.IsValid() { shippingDetailsPrimaryRecipient.Set(reflect.ValueOf(PrimaryRecipient)) }
 
 	VaultReference := npsSdk.NewVaultReference2pStruct()
-	VaultReference.PaymentMethodToken = "pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG"
+        paymentMethodToken := reflect.ValueOf(VaultReference).Elem().FieldByName("PaymentMethodToken")
+	if paymentMethodToken.IsValid() { paymentMethodToken.SetString("pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG") }
 
-	trn := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
-	trn.Psp_MerchantId = "psp_test"
-	trn.Psp_MerchTxRef = "ORDER66666-5"
-	trn.Psp_Product = "14"
-	trn.Psp_Amount = "10000"
-	trn.Psp_NumPayments = "1"
-	trn.Psp_VaultReference = VaultReference
+	TransactionsArr := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_2p_Transactions()
+	TransacItems := reflect.ValueOf(TransactionsArr).Elem().FieldByName("Items")
 
-	trn2 := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p_Transactions()
-	trn2.Psp_MerchantId = "psp_test"
-	trn2.Psp_MerchTxRef = "ORDER66666-6"
-	trn2.Psp_Product = "14"
-	trn2.Psp_Amount = "5050"
-	trn2.Psp_NumPayments = "1"
-	trn2.Psp_VaultReference = VaultReference
+       if TransacItems.Kind() == reflect.Slice {
+         st := TransacItems.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_2p_Transactions()
-	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitAuthorize_2p_Transactions, 0)
+         trn := reflect.New(sliceType)
+         trn.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-5") 
+         trn.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn.Elem().FieldByName("Psp_Amount").SetString("10000") 
+         trn.Elem().FieldByName("Psp_NumPayments").SetString("1") 
+         trn.Elem().FieldByName("Psp_VaultReference").Set(reflect.ValueOf(VaultReference)) 
 
-	Transactions.Items = append(Transactions.Items, trn)
-	Transactions.Items = append(Transactions.Items, trn2)
+         TransacItems.Set(reflect.Append(TransacItems, trn))
 
-	SplitAuthorize2p := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p()
+         trn2 := reflect.New(sliceType)
+         trn2.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn2.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-6") 
+         trn2.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn2.Elem().FieldByName("Psp_Amount").SetString("5050") 
+         trn2.Elem().FieldByName("Psp_NumPayments").SetString("1") 
 
-	SplitAuthorize2p.Psp_Version = "2.2"
-	SplitAuthorize2p.Psp_MerchantId = "psp_test"
-	SplitAuthorize2p.Psp_TxSource = "WEB"
-	SplitAuthorize2p.Psp_MerchOrderId = "20170609150900-1"
-	SplitAuthorize2p.Psp_Amount = "15050"
-	SplitAuthorize2p.Psp_Currency = "032"
-	SplitAuthorize2p.Psp_Country = "ARG"
-	SplitAuthorize2p.Psp_Product = "14"
-	SplitAuthorize2p.Psp_CardNumber = "4507990000000010"
-	SplitAuthorize2p.Psp_CardExpDate = "1903"
-	SplitAuthorize2p.Psp_PosDateTime = "2016-12-01 12:00:00"
+         TransacItems.Set(reflect.Append(TransacItems, trn2))
 
-	SplitAuthorize2p.Psp_BillingDetails = Billing
-	SplitAuthorize2p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
-	SplitAuthorize2p.Psp_MerchantAdditionalDetails = MerchantAdditionalDetails
-	SplitAuthorize2p.Psp_OrderDetails = OrderDetails
-	SplitAuthorize2p.Psp_ShippingDetails = ShippingDetails
-	SplitAuthorize2p.Psp_Transactions = Transactions
+      }
+
+      SplitAuthorize2p := npsSdk.NewRequerimientoStruct_SplitAuthorize_2p()
+      Transactions := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Transactions")
+      if Transactions.IsValid() { Transactions.Set(reflect.ValueOf(TransactionsArr)) }
+
+      psp_Version := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Version")
+      if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+      psp_MerchantId := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_MerchantId")
+      if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+      psp_TxSource := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_TxSource")
+      if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+      psp_MerchOrderId := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_MerchOrderId")
+      if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("20170609150900-1") }
+
+      psp_Amount := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Amount")
+      if psp_Amount.IsValid() { psp_Amount.SetString("15050") }
+
+      psp_Currency := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Currency")
+      if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+      psp_Country := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Country")
+      if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+      psp_Product := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_Product")
+      if psp_Product.IsValid() { psp_Product.SetString("14") }
+
+      psp_CardNumber := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_CardNumber")
+      if psp_CardNumber.IsValid() { psp_CardNumber.SetString("4507990000000010") }
+
+      psp_CardExpDate := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_CardExpDate")
+      if psp_CardExpDate.IsValid() { psp_CardExpDate.SetString("1903") }
+
+      psp_PosDateTime := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_PosDateTime")
+      if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+      psp_BillingDetails := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_BillingDetails")
+      if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+      psp_CustomerAdditionalDetails := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+      if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+
+      psp_MerchantAdditionalDetails := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_MerchantAdditionalDetails")
+      if psp_MerchantAdditionalDetails.IsValid() { psp_MerchantAdditionalDetails.Set(reflect.ValueOf(MerchantAdditionalDetails)) }
+
+      psp_OrderDetails := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_OrderDetails")
+      if psp_OrderDetails.IsValid() { psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+
+      psp_ShippingDetails := reflect.ValueOf(SplitAuthorize2p).Elem().FieldByName("Psp_ShippingDetails")
+      if psp_ShippingDetails.IsValid() { psp_ShippingDetails.Set(reflect.ValueOf(ShippingDetails)) }
 
 	resp, err := service.SplitAuthorize_2p(SplitAuthorize2p)
 	if err != nil {
@@ -599,83 +1113,168 @@ func SendSplitAuthorize_2p(service *npsSdk.PaymentServicePlatformPortType) error
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendPayOnLine_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+
+        if firstName.IsValid() { firstName.SetString("Silvina") }
+        if lastName.IsValid() { lastName.SetString("Falconi") }
+        if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
+        tip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+        discount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+
+        if tip.IsValid() { tip.SetString("10") }
+        if discount.IsValid() { discount.SetString("5") }
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "2017-06-29 12:00:00"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+        billingPerson := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+
+        if invoice.IsValid() { invoice.SetString("100001234") }
+        if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+        if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+        if billingPerson.IsValid() { billingPerson.Set(reflect.ValueOf(Person)) }
 
 	SellerAddress := npsSdk.NewAddressStruct()
-	SellerAddress.City = "CABA"
-	SellerAddress.Country = "ARG"
-	SellerAddress.Street = "SellerStreet"
-	SellerAddress.HouseNumber = "1234"
+        city := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
+        country := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
+        street := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
+        houseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
+        
+        if city.IsValid() { city.SetString("CABA") }
+        if country.IsValid() { country.SetString("ARG") }
+        if street.IsValid() { street.SetString("SellerStreet") }
+        if houseNumber.IsValid() { houseNumber.SetString("1234") }
 
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetails.Name = "Seller Name"
-	SellerDetails.Address = SellerAddress
+        sellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
+        sellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
+
+        if sellerDetailsName.IsValid() { sellerDetailsName.SetString("Seller Name") }
+        if sellerDetailsAddress.IsValid() { sellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
 
 	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
-	MerchantAdditionalDetails.SellerDetails = SellerDetails
+        shoppingCartInfo := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("ShoppingCartInfo")
+        merchantAdditionalDetailsSellerDetails := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("SellerDetails")
+        
+        if shoppingCartInfo.IsValid() { shoppingCartInfo.SetString("ShoppingCartInfo") }
+        if merchantAdditionalDetailsSellerDetails.IsValid() { merchantAdditionalDetailsSellerDetails.Set(reflect.ValueOf(SellerDetails)) }
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
+	emailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
+        if emailAddress.IsValid() { emailAddress.SetString("mailAddr@mail.com.ar") }
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+      Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
+
+         Items.Set(reflect.Append(Items, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         Items.Set(reflect.Append(Items, order2))
+         order3 := reflect.New(sliceType)
+         order3.Elem().FieldByName("Description").SetString("producto 3") 
+         order3.Elem().FieldByName("UnitPrice").SetString("30") 
+
+         Items.Set(reflect.Append(Items, order3))
+
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	PayOnline3p := npsSdk.NewRequerimientoStruct_PayOnLine_3p()
 
-	PayOnline3p.Psp_Version = "2.2"
-	PayOnline3p.Psp_MerchantId = "psp_test"
-	PayOnline3p.Psp_TxSource = "WEB"
-	PayOnline3p.Psp_MerchTxRef = "ORDER56666-3"
-	PayOnline3p.Psp_MerchOrderId = "ORDER56666"
-	PayOnline3p.Psp_Amount = "1000"
-	PayOnline3p.Psp_NumPayments = "1"
-	PayOnline3p.Psp_Currency = "032"
-	PayOnline3p.Psp_Country = "ARG"
-	PayOnline3p.Psp_Product = "14"
-	PayOnline3p.Psp_CustomerMail = "yourmail@gmail"
-	PayOnline3p.Psp_SoftDescriptor = "Sol Tropical E"
-	PayOnline3p.Psp_PosDateTime = "2016-12-01 12:00:00"
-	PayOnline3p.Psp_ReturnURL = "'http://psp-client.localhost/simple_query_tx.php"
-	PayOnline3p.Psp_FrmLanguage = "en_US"
+        psp_Version := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_Version")
+        if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	PayOnline3p.Psp_OrderDetails = OrderDetails
-	PayOnline3p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
-	PayOnline3p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	PayOnline3p.Psp_BillingDetails = Billing
-	PayOnline3p.Psp_MerchantAdditionalDetails = MerchantAdditionalDetails
+        psp_MerchantId := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_MerchantId")
+        if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+        psp_TxSource := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_TxSource")
+        if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+        psp_MerchTxRef := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_MerchTxRef")
+        if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString("ORDER56666-3") }
+
+        psp_MerchOrderId := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_MerchOrderId")
+        if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORDER56666") }
+
+        psp_Amount := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_Amount")
+        if psp_Amount.IsValid() { psp_Amount.SetString("1000") }
+
+        psp_NumPayments := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_NumPayments")
+        if psp_NumPayments.IsValid() { psp_NumPayments.SetString("1") }
+
+        psp_Currency := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_Currency")
+        if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+        psp_Country := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_Country")
+        if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+        psp_Product := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_Product")
+        if psp_Product.IsValid() { psp_Product.SetString("14") }
+
+        psp_CustomerMail := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_CustomerMail")
+        if psp_CustomerMail.IsValid() { psp_CustomerMail.SetString("yourmail@gmail") }
+
+        psp_SoftDescriptor := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_SoftDescriptor")
+        if psp_SoftDescriptor.IsValid() { psp_SoftDescriptor.SetString("Sol Tropical E") }
+
+        psp_PosDateTime := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_PosDateTime")
+        if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_ReturnURL := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_ReturnURL")
+        if psp_ReturnURL.IsValid() { psp_ReturnURL.SetString("http://psp-client.localhost/simple_query_tx.php") }
+
+        psp_FrmLanguage := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_FrmLanguage")
+        if psp_FrmLanguage.IsValid() { psp_FrmLanguage.SetString("en_US") }
+
+        psp_OrderDetails := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_OrderDetails")
+        if psp_OrderDetails.IsValid() { psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+
+        psp_CustomerAdditionalDetails := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+        if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+
+        psp_AmountAdditionalDetails := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+        if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+
+        psp_BillingDetails := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_BillingDetails")
+        if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+        psp_MerchantAdditionalDetails := reflect.ValueOf(PayOnline3p).Elem().FieldByName("Psp_MerchantAdditionalDetails")
+        if psp_MerchantAdditionalDetails.IsValid() { psp_MerchantAdditionalDetails.Set(reflect.ValueOf(MerchantAdditionalDetails)) }
 
 	resp, err := service.PayOnLine_3p(PayOnline3p)
 	if err != nil {
@@ -683,92 +1282,181 @@ func SendPayOnLine_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+	emailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
+        if emailAddress.IsValid() { emailAddress.SetString("CustomerEmail@email.com.ar") }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+
+        if firstName.IsValid() { firstName.SetString("Silvina") }
+        if lastName.IsValid() { lastName.SetString("Falconi") }
+        if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+        billingPerson := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+
+        if invoice.IsValid() { invoice.SetString("100001234") }
+        if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+        if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+        if billingPerson.IsValid() { billingPerson.Set(reflect.ValueOf(Person)) }
 
 	SellerAddress := npsSdk.NewAddressStruct()
-	SellerAddress.City = "CABA"
-	SellerAddress.Country = "ARG"
-	SellerAddress.Street = "SellerStreet"
-	SellerAddress.HouseNumber = "1234"
+        city := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
+        country := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
+        street := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
+        houseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
+        
+        if city.IsValid() { city.SetString("CABA") }
+        if country.IsValid() { country.SetString("ARG") }
+        if street.IsValid() { street.SetString("SellerStreet") }
+        if houseNumber.IsValid() { houseNumber.SetString("1234") }
 
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetails.Name = "Seller Name"
-	SellerDetails.Address = SellerAddress
+        sellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
+        sellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
 
-	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
-	MerchantAdditionalDetails.SellerDetails = SellerDetails
+        if sellerDetailsName.IsValid() { sellerDetailsName.SetString("Seller Name") }
+        if sellerDetailsAddress.IsValid() { sellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+      Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
+
+         Items.Set(reflect.Append(Items, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         Items.Set(reflect.Append(Items, order2))
+         order3 := reflect.New(sliceType)
+         order3.Elem().FieldByName("Description").SetString("producto 3") 
+         order3.Elem().FieldByName("UnitPrice").SetString("30") 
+
+         Items.Set(reflect.Append(Items, order3))
+
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
 	ShippingAddress := npsSdk.NewAddressStruct()
-	ShippingAddress.Street = "shipping street"
-	ShippingAddress.HouseNumber = "1234"
-	ShippingAddress.City = "CABA"
-	ShippingAddress.Country = "ARG"
-	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
+
+	shippingAddressStreet := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Street")
+ 	if shippingAddressStreet.IsValid() { shippingAddressStreet.SetString("shipping street") }
+
+	shippingAddressHouseNumber := reflect.ValueOf(ShippingAddress).Elem().FieldByName("HouseNumber")
+ 	if shippingAddressHouseNumber.IsValid() { shippingAddressHouseNumber.SetString("1234") }
+
+	shippingAddressCity := reflect.ValueOf(ShippingAddress).Elem().FieldByName("City")
+ 	if shippingAddressCity.IsValid() { shippingAddressCity.SetString("CABA") }
+
+	shippingAddressCountry := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Country")
+ 	if shippingAddressCountry.IsValid() { shippingAddressCountry.SetString("ARG") }
+
+	shippingAddressAddInfo := reflect.ValueOf(ShippingAddress).Elem().FieldByName("AdditionalInfo")
+ 	if shippingAddressAddInfo.IsValid() { shippingAddressAddInfo.SetString("AdditionalInfo of shipping") }
 
 	PrimaryRecipient := npsSdk.NewPersonStruct()
-	PrimaryRecipient.FirstName = "Pepe"
-	PrimaryRecipient.LastName = "Juan"
 
-	ShippingDetails.Method = "10"
-	ShippingDetails.Address = ShippingAddress
-	ShippingDetails.PrimaryRecipient = PrimaryRecipient
+	primRecFirstName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("FirstName")
+ 	if primRecFirstName.IsValid() { primRecFirstName.SetString("Pepe") }
+
+	primRecLastName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("LastName")
+ 	if primRecLastName.IsValid() { primRecLastName.SetString("Juan") }
+
+	shippingDetailsMethod := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Method")
+ 	if shippingDetailsMethod.IsValid() { shippingDetailsMethod.SetString("10") }
+
+	shippingDetailsAddress := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Address")
+ 	if shippingDetailsAddress.IsValid() { shippingDetailsAddress.Set(reflect.ValueOf(ShippingAddress)) }
+
+	shippingDetailsPrimaryRecipient := reflect.ValueOf(ShippingDetails).Elem().FieldByName("PrimaryRecipient")
+ 	if shippingDetailsPrimaryRecipient.IsValid() { shippingDetailsPrimaryRecipient.Set(reflect.ValueOf(PrimaryRecipient)) }
 
 	Authorize3p := npsSdk.NewRequerimientoStruct_Authorize_3p()
 
-	Authorize3p.Psp_Version = "2.2"
-	Authorize3p.Psp_MerchantId = "psp_test"
-	Authorize3p.Psp_TxSource = "WEB"
-	Authorize3p.Psp_MerchTxRef = "20170609150900"
-	Authorize3p.Psp_MerchOrderId = "20170609150900-1"
-	Authorize3p.Psp_Amount = "15050"
-	Authorize3p.Psp_NumPayments = "1"
-	Authorize3p.Psp_Currency = "032"
-	Authorize3p.Psp_Country = "ARG"
-	Authorize3p.Psp_Product = "14"
-	Authorize3p.Psp_PosDateTime = "2016-12-01 12:00:00"
+        psp_Version := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_Version")
+        if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	Authorize3p.Psp_ReturnURL = "http://psp-client.localhost/simple_query_tx.php"
-	Authorize3p.Psp_FrmLanguage = "en_US"
+        psp_MerchantId := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_MerchantId")
+        if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	Authorize3p.Psp_OrderDetails = OrderDetails
-	Authorize3p.Psp_ShippingDetails = ShippingDetails
+        psp_TxSource := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_TxSource")
+        if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+        psp_MerchTxRef := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_MerchTxRef")
+        if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString("ORDER56666-3") }
+
+        psp_MerchOrderId := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_MerchOrderId")
+        if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORDER56666") }
+
+        psp_Amount := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_Amount")
+        if psp_Amount.IsValid() { psp_Amount.SetString("15050") }
+
+        psp_NumPayments := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_NumPayments")
+        if psp_NumPayments.IsValid() { psp_NumPayments.SetString("1") }
+
+        psp_Currency := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_Currency")
+        if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+        psp_Country := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_Country")
+        if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+        psp_Product := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_Product")
+        if psp_Product.IsValid() { psp_Product.SetString("14") }
+
+        psp_CustomerMail := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_CustomerMail")
+        if psp_CustomerMail.IsValid() { psp_CustomerMail.SetString("yourmail@gmail") }
+
+        psp_SoftDescriptor := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_SoftDescriptor")
+        if psp_SoftDescriptor.IsValid() { psp_SoftDescriptor.SetString("Sol Tropical E") }
+
+        psp_PosDateTime := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_PosDateTime")
+        if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_ReturnURL := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_ReturnURL")
+        if psp_ReturnURL.IsValid() { psp_ReturnURL.SetString("http://psp-client.localhost/simple_query_tx.php") }
+
+        psp_FrmLanguage := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_FrmLanguage")
+        if psp_FrmLanguage.IsValid() { psp_FrmLanguage.SetString("en_US") }
+
+        psp_OrderDetails := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_OrderDetails")
+        if psp_OrderDetails.IsValid() { psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+
+        psp_ShippingDetails := reflect.ValueOf(Authorize3p).Elem().FieldByName("Psp_ShippingDetails")
+        if psp_ShippingDetails.IsValid() { psp_ShippingDetails.Set(reflect.ValueOf(ShippingDetails)) }
 
 	resp, err := service.Authorize_3p(Authorize3p)
 	if err != nil {
@@ -776,82 +1464,159 @@ func SendAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendSplitAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error {
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+      Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if Items.Kind() == reflect.Slice {
+         st := Items.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+         Items.Set(reflect.Append(Items, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         Items.Set(reflect.Append(Items, order2))
+         order3 := reflect.New(sliceType)
+         order3.Elem().FieldByName("Description").SetString("producto 3") 
+         order3.Elem().FieldByName("UnitPrice").SetString("30") 
+
+         Items.Set(reflect.Append(Items, order3))
+
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	ShippingDetails := npsSdk.NewShippingDetailsStruct()
 
 	ShippingAddress := npsSdk.NewAddressStruct()
-	ShippingAddress.Street = "shipping street"
-	ShippingAddress.HouseNumber = "1234"
-	ShippingAddress.City = "CABA"
-	ShippingAddress.Country = "ARG"
-	ShippingAddress.AdditionalInfo = "AdditionalInfo of shipping"
+
+	shippingAddressStreet := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Street")
+ 	if shippingAddressStreet.IsValid() { shippingAddressStreet.SetString("shipping street") }
+
+	shippingAddressHouseNumber := reflect.ValueOf(ShippingAddress).Elem().FieldByName("HouseNumber")
+ 	if shippingAddressHouseNumber.IsValid() { shippingAddressHouseNumber.SetString("1234") }
+
+	shippingAddressCity := reflect.ValueOf(ShippingAddress).Elem().FieldByName("City")
+ 	if shippingAddressCity.IsValid() { shippingAddressCity.SetString("CABA") }
+
+	shippingAddressCountry := reflect.ValueOf(ShippingAddress).Elem().FieldByName("Country")
+ 	if shippingAddressCountry.IsValid() { shippingAddressCountry.SetString("ARG") }
+
+	shippingAddressAddInfo := reflect.ValueOf(ShippingAddress).Elem().FieldByName("AdditionalInfo")
+ 	if shippingAddressAddInfo.IsValid() { shippingAddressAddInfo.SetString("AdditionalInfo of shipping") }
 
 	PrimaryRecipient := npsSdk.NewPersonStruct()
-	PrimaryRecipient.FirstName = "Pepe"
-	PrimaryRecipient.LastName = "Juan"
 
-	ShippingDetails.Method = "10"
-	ShippingDetails.Address = ShippingAddress
-	ShippingDetails.PrimaryRecipient = PrimaryRecipient
+	primRecFirstName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("FirstName")
+ 	if primRecFirstName.IsValid() { primRecFirstName.SetString("Pepe") }
 
-	trn := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
-	trn.Psp_MerchantId = "psp_test"
-	trn.Psp_MerchTxRef = "ORDER66666-5"
-	trn.Psp_Product = "14"
-	trn.Psp_Amount = "10000"
-	trn.Psp_NumPayments = "1"
+	primRecLastName := reflect.ValueOf(PrimaryRecipient).Elem().FieldByName("LastName")
+ 	if primRecLastName.IsValid() { primRecLastName.SetString("Juan") }
 
-	trn2 := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p_Transactions()
-	trn2.Psp_MerchantId = "psp_test"
-	trn2.Psp_MerchTxRef = "ORDER66666-6"
-	trn2.Psp_Product = "14"
-	trn2.Psp_Amount = "5050"
-	trn2.Psp_NumPayments = "1"
+	shippingDetailsMethod := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Method")
+ 	if shippingDetailsMethod.IsValid() { shippingDetailsMethod.SetString("10") }
 
-	Transactions := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_3p_Transactions()
-	Transactions.Items = make([]*npsSdk.RequerimientoStruct_SplitAuthorize_3p_Transactions, 0)
+	shippingDetailsAddress := reflect.ValueOf(ShippingDetails).Elem().FieldByName("Address")
+ 	if shippingDetailsAddress.IsValid() { shippingDetailsAddress.Set(reflect.ValueOf(ShippingAddress)) }
 
-	Transactions.Items = append(Transactions.Items, trn)
-	Transactions.Items = append(Transactions.Items, trn2)
+	shippingDetailsPrimaryRecipient := reflect.ValueOf(ShippingDetails).Elem().FieldByName("PrimaryRecipient")
+ 	if shippingDetailsPrimaryRecipient.IsValid() { shippingDetailsPrimaryRecipient.Set(reflect.ValueOf(PrimaryRecipient)) }
+
+	TransactionsArr := npsSdk.NewArrayOf_RequerimientoStruct_SplitAuthorize_3p_Transactions()
+	trnItems := reflect.ValueOf(TransactionsArr).Elem().FieldByName("Items")
+
+       if trnItems.Kind() == reflect.Slice {
+         st := trnItems.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
+
+         trn := reflect.New(sliceType)
+         trn.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-5") 
+         trn.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn.Elem().FieldByName("Psp_Amount").SetString("10000") 
+         trn.Elem().FieldByName("Psp_NumPayments").SetString("1") 
+
+         trnItems.Set(reflect.Append(trnItems, trn))
+
+         trn2 := reflect.New(sliceType)
+         trn2.Elem().FieldByName("Psp_MerchantId").SetString("psp_test") 
+         trn2.Elem().FieldByName("Psp_MerchTxRef").SetString("ORDER66666-6") 
+         trn2.Elem().FieldByName("Psp_Product").SetString("14") 
+         trn2.Elem().FieldByName("Psp_Amount").SetString("5050") 
+         trn2.Elem().FieldByName("Psp_NumPayments").SetString("1") 
+
+         trnItems.Set(reflect.Append(trnItems, trn2))
+
+      }
+
 
 	SplitAuthorize3p := npsSdk.NewRequerimientoStruct_SplitAuthorize_3p()
+	Transactions := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Transactions")
+        if Transactions.IsValid() { Transactions.Set(reflect.ValueOf(TransactionsArr)) }
 
-	SplitAuthorize3p.Psp_Version = "2.2"
-	SplitAuthorize3p.Psp_MerchantId = "psp_test"
-	SplitAuthorize3p.Psp_TxSource = "WEB"
-	SplitAuthorize3p.Psp_MerchOrderId = "20170609150900-1"
-	SplitAuthorize3p.Psp_Amount = "15050"
-	SplitAuthorize3p.Psp_Currency = "032"
-	SplitAuthorize3p.Psp_Country = "ARG"
-	SplitAuthorize3p.Psp_Product = "14"
-	SplitAuthorize3p.Psp_PosDateTime = "2016-12-01 12:00:00"
+        psp_Version := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Version")
+        if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	SplitAuthorize3p.Psp_ReturnURL = "http://psp-client.localhost/simple_query_tx.php"
-	SplitAuthorize3p.Psp_FrmLanguage = "en_US"
+        psp_MerchantId := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_MerchantId")
+        if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	SplitAuthorize3p.Psp_OrderDetails = OrderDetails
-	SplitAuthorize3p.Psp_ShippingDetails = ShippingDetails
-	SplitAuthorize3p.Psp_Transactions = Transactions
+        psp_TxSource := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_TxSource")
+        if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+        psp_MerchOrderId := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_MerchOrderId")
+        if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORDER56666") }
+
+        psp_Amount := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Amount")
+        if psp_Amount.IsValid() { psp_Amount.SetString("15050") }
+
+        psp_Currency := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Currency")
+        if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+        psp_Country := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Country")
+        if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+        psp_Product := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_Product")
+        if psp_Product.IsValid() { psp_Product.SetString("14") }
+
+        psp_PosDateTime := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_PosDateTime")
+        if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_ReturnURL := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_ReturnURL")
+        if psp_ReturnURL.IsValid() { psp_ReturnURL.SetString("http://psp-client.localhost/simple_query_tx.php") }
+
+        psp_FrmLanguage := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_FrmLanguage")
+        if psp_FrmLanguage.IsValid() { psp_FrmLanguage.SetString("en_US") }
+
+        psp_OrderDetails := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_OrderDetails")
+        if psp_OrderDetails.IsValid() { psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
+
+        psp_ShippingDetails := reflect.ValueOf(SplitAuthorize3p).Elem().FieldByName("Psp_ShippingDetails")
+        if psp_ShippingDetails.IsValid() { psp_ShippingDetails.Set(reflect.ValueOf(ShippingDetails)) }
 
 	resp, err := service.SplitAuthorize_3p(SplitAuthorize3p)
 	if err != nil {
@@ -859,69 +1624,140 @@ func SendSplitAuthorize_3p(service *npsSdk.PaymentServicePlatformPortType) error
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendBankPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
-
 	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := npsSdk.NewTaxesRequestStruct()
-	tax1.TypeId = "500"
-	tax1.Amount = "50"
-	tax1.Rate = "10"
+        Items := reflect.ValueOf(Taxes).Elem().FieldByName("Items")
+	if Items.Kind() == reflect.Slice {
+          st := Items.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
 
-	Taxes.Items = append(Taxes.Items, tax1)
+         tax1 := reflect.New(sliceType)
+         tax1.Elem().FieldByName("TypeId").SetString("500")
+         tax1.Elem().FieldByName("Amount").SetString("50")  
+         tax1.Elem().FieldByName("Rate").SetString("10")  
+         Items.Set(reflect.Append(Items, tax1))
+	}
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
-	AmountAdditionalDetails.Taxes = Taxes
+
+	amountAddTip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+	if amountAddTip.IsValid() { amountAddTip.SetString("10") }
+
+	amountAddDiscount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+	if amountAddDiscount.IsValid() { amountAddDiscount.SetString("5") }
+
+	amountAddTaxes := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Taxes")
+	if amountAddTaxes.IsValid() { amountAddTaxes.Set(reflect.ValueOf(Taxes)) }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
-	Person.IDNumber = "11111111"
-	Person.IDType = "100"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+	if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+	if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+	if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
+
+        idNumber := reflect.ValueOf(Person).Elem().FieldByName("IDNumber")
+	if idNumber.IsValid() { idNumber.SetString("11111111") }
+
+        idType := reflect.ValueOf(Person).Elem().FieldByName("IDType")
+	if idType.IsValid() { idType.SetString("100") }
+
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+	if invoice.IsValid() { invoice.SetString("100001234") }
+
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+	if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+	if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+
+        person := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(Person)) }
+
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+        emailAddress := reflect.ValueOf(Billing).Elem().FieldByName("EmailAddress")
+	if emailAddress.IsValid() { emailAddress.SetString("CustomerEmail@email.com.ar") }
 
 	BankPayment_3p := npsSdk.NewRequerimientoStruct_BankPayment_3p()
-	BankPayment_3p.Psp_Version = "2.2"
-	BankPayment_3p.Psp_Product = "320"
-	BankPayment_3p.Psp_MerchantId = "psp_test"
-	BankPayment_3p.Psp_TxSource = "TxSource"
-	BankPayment_3p.Psp_MerchTxRef = "11111"
-	BankPayment_3p.Psp_MerchOrderId = "ORD-10001"
-	BankPayment_3p.Psp_ScreenDescription = "SCR DESC"
-	BankPayment_3p.Psp_TicketDescription = "ticket desc"
-	BankPayment_3p.Psp_ReturnURL = "http://localhost/"
-	BankPayment_3p.Psp_FrmLanguage = "es_AR"
+	psp_Version := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	BankPayment_3p.Psp_Amount1 = "10000"
-	BankPayment_3p.Psp_ExpDate1 = "2017-09-01"
-	BankPayment_3p.Psp_Amount2 = "20000"
-	BankPayment_3p.Psp_ExpDate2 = "2017-09-10"
-	BankPayment_3p.Psp_Country = "ARG"
-	BankPayment_3p.Psp_Currency = "032"
-	BankPayment_3p.Psp_PosDateTime = "2016-12-01 12:00:00"
-	BankPayment_3p.Psp_TxSource = "WEB"
+	psp_Product := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
 
-	BankPayment_3p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	BankPayment_3p.Psp_BillingDetails = Billing
-	BankPayment_3p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
+	psp_MerchantId := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_TxSource := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_MerchTxRef := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_MerchTxRef")
+        t := time.Now()
+ 	if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+
+	psp_MerchOrderId := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-10001") }
+
+	psp_ScreenDescription := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_ScreenDescription")
+	if psp_ScreenDescription.IsValid() { psp_ScreenDescription.SetString("SCR DESC") }
+
+	psp_TicketDescription := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_TicketDescription")
+	if psp_TicketDescription.IsValid() { psp_TicketDescription.SetString("ticket desc") }
+
+	psp_ReturnURL := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_ReturnURL")
+	if psp_ReturnURL.IsValid() { psp_ReturnURL.SetString("http://localhost/") }
+
+	psp_FrmLanguage := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_FrmLanguage")
+	if psp_FrmLanguage.IsValid() { psp_FrmLanguage.SetString("es_AR") }
+
+	psp_Amount1 := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Amount1")
+	if psp_Amount1.IsValid() { psp_Amount1.SetString("10000") }
+
+	psp_ExpDate1 := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_ExpDate1")
+	if psp_ExpDate1.IsValid() { psp_ExpDate1.SetString("2017-09-01") }
+
+	psp_Amount2 := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Amount2")
+	if psp_Amount2.IsValid() { psp_Amount2.SetString("20000") }
+
+	psp_ExpDate2 := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_ExpDate2")
+	if psp_ExpDate2.IsValid() { psp_ExpDate2.SetString("2017-09-01") }
+
+	psp_Country := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Country")
+	if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+	psp_Currency := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_Currency")
+	if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+	psp_PosDateTime := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_AmountAdditionalDetails := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+        if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+
+        psp_BillingDetails := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_BillingDetails")
+        if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+        psp_CustomerAdditionalDetails := reflect.ValueOf(BankPayment_3p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+        if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+
 
 	resp, err := service.BankPayment_3p(BankPayment_3p)
 	if err != nil {
@@ -929,77 +1765,155 @@ func SendBankPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendCashPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
-
 	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := npsSdk.NewTaxesRequestStruct()
-	tax1.TypeId = "500"
-	tax1.Amount = "50"
-	tax1.Rate = "10"
+        Items := reflect.ValueOf(Taxes).Elem().FieldByName("Items")
+	if Items.Kind() == reflect.Slice {
+          st := Items.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
 
-	Taxes.Items = append(Taxes.Items, tax1)
+         tax1 := reflect.New(sliceType)
+         tax1.Elem().FieldByName("TypeId").SetString("500")
+         tax1.Elem().FieldByName("Amount").SetString("50")  
+         tax1.Elem().FieldByName("Rate").SetString("10")  
+         Items.Set(reflect.Append(Items, tax1))
+	}
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
-	AmountAdditionalDetails.Taxes = Taxes
+
+	amountAddTip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+	if amountAddTip.IsValid() { amountAddTip.SetString("10") }
+
+	amountAddDiscount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+	if amountAddDiscount.IsValid() { amountAddDiscount.SetString("5") }
+
+	amountAddTaxes := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Taxes")
+	if amountAddTaxes.IsValid() { amountAddTaxes.Set(reflect.ValueOf(Taxes)) }
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
-	Person.IDNumber = "11111111"
-	Person.IDType = "100"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+	if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+	if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+	if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
+
+        idNumber := reflect.ValueOf(Person).Elem().FieldByName("IDNumber")
+	if idNumber.IsValid() { idNumber.SetString("11111111") }
+
+        idType := reflect.ValueOf(Person).Elem().FieldByName("IDType")
+	if idType.IsValid() { idType.SetString("100") }
+
 
 	Billing := npsSdk.NewBillingDetailsStruct()
-	Billing.Invoice = "100001234"
-	//Billing.InvoiceDate = "20170601"
-	Billing.InvoiceAmount = "990"
-	Billing.InvoiceCurrency = "032"
-	Billing.Person = Person
+        invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
+	if invoice.IsValid() { invoice.SetString("100001234") }
+
+        invoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
+	if invoiceAmount.IsValid() { invoiceAmount.SetString("990") }
+
+        invoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
+	if invoiceCurrency.IsValid() { invoiceCurrency.SetString("032") }
+
+        person := reflect.ValueOf(Billing).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(Person)) }
+
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	CustomerAdditionalDetails.EmailAddress = "CustomerEmail@email.com.ar"
+        emailAddress := reflect.ValueOf(Billing).Elem().FieldByName("EmailAddress")
+	if emailAddress.IsValid() { emailAddress.SetString("CustomerEmail@email.com.ar") }
 
-	order1 := npsSdk.NewOrderItemStruct()
-	order1.Description = "producto 1"
-	order1.UnitPrice = "10"
+      OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
-	order2 := npsSdk.NewOrderItemStruct()
-	order2.Description = "producto 2"
-	order2.UnitPrice = "20"
+      orderItems := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
+	
+       if orderItems.Kind() == reflect.Slice {
+         st := orderItems.Type()
+         sliceType := st.Elem()
+         if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+         }
 
-	OrderDetails := npsSdk.NewOrderDetailsStruct()
-	OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
-	OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-	OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
+         order1 := reflect.New(sliceType)
+         order1.Elem().FieldByName("Description").SetString("producto 1") 
+         order1.Elem().FieldByName("UnitPrice").SetString("10") 
+
+         orderItems.Set(reflect.Append(orderItems, order1))
+
+         order2 := reflect.New(sliceType)
+         order2.Elem().FieldByName("Description").SetString("producto 2") 
+         order2.Elem().FieldByName("UnitPrice").SetString("20") 
+
+         orderItems.Set(reflect.Append(orderItems, order2))
+      }
+
+      OrderDetails := npsSdk.NewOrderDetailsStruct()    
+      OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
+
+      if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
 
 	CashPayment_3p := npsSdk.NewRequerimientoStruct_CashPayment_3p()
-	CashPayment_3p.Psp_Version = "2.2"
-	CashPayment_3p.Psp_Product = "320"
-	CashPayment_3p.Psp_MerchantId = "psp_test"
-	CashPayment_3p.Psp_TxSource = "TxSource"
-	CashPayment_3p.Psp_MerchTxRef = "11111"
-	CashPayment_3p.Psp_MerchOrderId = "ORD-10001"
-	CashPayment_3p.Psp_ReturnURL = "http://localhost/"
-	CashPayment_3p.Psp_FrmLanguage = "es_AR"
-	CashPayment_3p.Psp_Amount = "11000"
-	CashPayment_3p.Psp_Currency = "032"
-	CashPayment_3p.Psp_Country = "ARG"
-	CashPayment_3p.Psp_PosDateTime = "2016-12-01 12:00:00"
-	CashPayment_3p.Psp_TxSource = "WEB"
 
-	CashPayment_3p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
-	CashPayment_3p.Psp_BillingDetails = Billing
-	CashPayment_3p.Psp_OrderDetails = OrderDetails
+	psp_Version := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_Product := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
+
+	psp_MerchantId := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_TxSource := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_MerchTxRef := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_MerchTxRef")
+        t := time.Now()
+ 	if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+
+	psp_MerchOrderId := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-10001") }
+
+	psp_ReturnURL := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_ReturnURL")
+	if psp_ReturnURL.IsValid() { psp_ReturnURL.SetString("http://localhost/") }
+
+	psp_FrmLanguage := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_FrmLanguage")
+	if psp_FrmLanguage.IsValid() { psp_FrmLanguage.SetString("es_AR") }
+
+	psp_Amount := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_Amount")
+	if psp_Amount.IsValid() { psp_Amount.SetString("11000") }
+
+	psp_Country := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_Country")
+	if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+	psp_Currency := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_Currency")
+	if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+	psp_PosDateTime := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_AmountAdditionalDetails := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_AmountAdditionalDetails")
+        if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
+
+        psp_BillingDetails := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_BillingDetails")
+        if psp_BillingDetails.IsValid() { psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
+
+        psp_CustomerAdditionalDetails := reflect.ValueOf(CashPayment_3p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
+        if psp_CustomerAdditionalDetails.IsValid() { psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
+
 
 	resp, err := service.CashPayment_3p(CashPayment_3p)
 	if err != nil {
@@ -1007,39 +1921,74 @@ func SendCashPayment_3p(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendCapture(service *npsSdk.PaymentServicePlatformPortType) error {
-
 	Taxes := npsSdk.NewArrayOf_TaxesRequestStruct()
-	Taxes.Items = make([]*npsSdk.TaxesRequestStruct, 0)
 
-	tax1 := npsSdk.NewTaxesRequestStruct()
-	tax1.TypeId = "500"
-	tax1.Amount = "50"
-	tax1.Rate = "10"
+        Items := reflect.ValueOf(Taxes).Elem().FieldByName("Items")
+	if Items.Kind() == reflect.Slice {
+          st := Items.Type()
+          sliceType := st.Elem()
+          if sliceType.Kind() == reflect.Ptr {
+            sliceType = sliceType.Elem()
+          }
 
-	Taxes.Items = append(Taxes.Items, tax1)
+         tax1 := reflect.New(sliceType)
+         tax1.Elem().FieldByName("TypeId").SetString("500")
+         tax1.Elem().FieldByName("Amount").SetString("50")  
+         tax1.Elem().FieldByName("Rate").SetString("10")  
+         Items.Set(reflect.Append(Items, tax1))
+	}
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	AmountAdditionalDetails.Tip = "10"
-	AmountAdditionalDetails.Discount = "5"
-	AmountAdditionalDetails.Taxes = Taxes
+
+	amountAddTip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
+	if amountAddTip.IsValid() { amountAddTip.SetString("10") }
+
+	amountAddDiscount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
+	if amountAddDiscount.IsValid() { amountAddDiscount.SetString("5") }
+
+	amountAddTaxes := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Taxes")
+	if amountAddTaxes.IsValid() { amountAddTaxes.Set(reflect.ValueOf(Taxes)) }
 
 	Capture := npsSdk.NewRequerimientoStruct_Capture()
-	Capture.Psp_Version = "2.2"
-	Capture.Psp_MerchantId = "psp_test"
-	Capture.Psp_TxSource = "TxSource"
-	Capture.Psp_MerchTxRef = "20170630103800"
-	Capture.Psp_PosDateTime = "2016-12-01 12:00:00"
-	Capture.Psp_TxSource = "WEB"
-	Capture.Psp_TransactionId_Orig = "1868712"
-	Capture.Psp_AmountToCapture = "15000"
+	psp_Version := reflect.ValueOf(Capture).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	Capture.Psp_AmountAdditionalDetails = AmountAdditionalDetails
+	psp_Product := reflect.ValueOf(Capture).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
+
+	psp_MerchantId := reflect.ValueOf(Capture).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_TxSource := reflect.ValueOf(Capture).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_MerchTxRef := reflect.ValueOf(Capture).Elem().FieldByName("Psp_MerchTxRef")
+        t := time.Now()
+ 	if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+
+	psp_MerchOrderId := reflect.ValueOf(Capture).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-10001") }
+
+	psp_PosDateTime := reflect.ValueOf(Capture).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+	psp_TransactionId_Orig := reflect.ValueOf(Capture).Elem().FieldByName("Psp_TransactionId_Orig")
+	if psp_TransactionId_Orig.IsValid() { psp_TransactionId_Orig.SetString("1868712") }
+
+	psp_AmountToCapture := reflect.ValueOf(Capture).Elem().FieldByName("Psp_AmountToCapture")
+	if psp_AmountToCapture.IsValid() { psp_AmountToCapture.SetString("15000") }
+
+        psp_AmountAdditionalDetails := reflect.ValueOf(Capture).Elem().FieldByName("Psp_AmountAdditionalDetails")
+        if psp_AmountAdditionalDetails.IsValid() { psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
 
 	resp, err := service.Capture(Capture)
 	if err != nil {
@@ -1047,22 +1996,44 @@ func SendCapture(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendRefund(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Refund := npsSdk.NewRequerimientoStruct_Refund()
-	Refund.Psp_Version = "2.2"
-	Refund.Psp_MerchantId = "psp_test"
-	Refund.Psp_TxSource = "TxSource"
-	Refund.Psp_MerchTxRef = "20170630104000"
-	Refund.Psp_PosDateTime = "2016-12-01 12:00:00"
-	Refund.Psp_TxSource = "WEB"
-	Refund.Psp_TransactionId_Orig = "1868717"
-	Refund.Psp_AmountToRefund = "10000"
+	psp_Version := reflect.ValueOf(Refund).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_Product := reflect.ValueOf(Refund).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("320") }
+
+	psp_MerchantId := reflect.ValueOf(Refund).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_TxSource := reflect.ValueOf(Refund).Elem().FieldByName("Psp_TxSource")
+	if psp_TxSource.IsValid() { psp_TxSource.SetString("WEB") }
+
+	psp_MerchTxRef := reflect.ValueOf(Refund).Elem().FieldByName("Psp_MerchTxRef")
+        t := time.Now()
+ 	if psp_MerchTxRef.IsValid() { psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+
+	psp_MerchOrderId := reflect.ValueOf(Refund).Elem().FieldByName("Psp_MerchOrderId")
+	if psp_MerchOrderId.IsValid() { psp_MerchOrderId.SetString("ORD-10001") }
+
+	psp_PosDateTime := reflect.ValueOf(Refund).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+	psp_TransactionId_Orig := reflect.ValueOf(Refund).Elem().FieldByName("Psp_TransactionId_Orig")
+	if psp_TransactionId_Orig.IsValid() { psp_TransactionId_Orig.SetString("1868717") }
+
+	psp_AmountToRefund := reflect.ValueOf(Refund).Elem().FieldByName("Psp_AmountToRefund")
+	if psp_AmountToRefund.IsValid() { psp_AmountToRefund.SetString("10000") }
 
 	resp, err := service.Refund(Refund)
 	if err != nil {
@@ -1070,18 +2041,28 @@ func SendRefund(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendRetrievePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	RetrievePaymentMethodToken := npsSdk.NewRequerimientoStruct_RetrievePaymentMethodToken()
-	RetrievePaymentMethodToken.Psp_Version = "2.2"
-	RetrievePaymentMethodToken.Psp_MerchantId = "psp_test"
-	RetrievePaymentMethodToken.Psp_PaymentMethodToken = "FG2WE0mVhoOm4U2a1R8qsBe307mtiVy0"
-	RetrievePaymentMethodToken.Psp_ClientSession = "iYgdiXyl56vszeEpCRGmS1JiNYg1xSnYXzQuiFWP4Q2nTwbPiWwZruUzXmqrXYR9"
+	psp_Version := reflect.ValueOf(RetrievePaymentMethodToken).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_MerchantId := reflect.ValueOf(RetrievePaymentMethodToken).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PaymentMethodToken := reflect.ValueOf(RetrievePaymentMethodToken).Elem().FieldByName("Psp_PaymentMethodToken")
+	if psp_PaymentMethodToken.IsValid() { psp_PaymentMethodToken.SetString("FG2WE0mVhoOm4U2a1R8qsBe307mtiVy0") }
+
+	psp_ClientSession := reflect.ValueOf(RetrievePaymentMethodToken).Elem().FieldByName("Psp_ClientSession")
+	if psp_ClientSession.IsValid() { psp_ClientSession.SetString("w9mXsBXOlK5mx340F9WsXVoCTUsila2lqTBeqTwezfkbTt0li4NLXrFeFsbfXO9J") }
 
 	resp, err := service.RetrievePaymentMethodToken(RetrievePaymentMethodToken)
 	if err != nil {
@@ -1089,46 +2070,31 @@ func SendRetrievePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortTy
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-	return nil
-}
-
-func SendCreatePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
-
-	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
-	cardInputDetails.HolderName = "tester"
-	cardInputDetails.ExpirationDate = "1812"
-	cardInputDetails.Number = "4507990000000010"
-	cardInputDetails.SecurityCode = "123"
-
-	CreatePaymentMethodToken := npsSdk.NewRequerimientoStruct_CreatePaymentMethodToken()
-
-	CreatePaymentMethodToken.Psp_Version = "2.2"
-	CreatePaymentMethodToken.Psp_MerchantId = "psp_test"
-	CreatePaymentMethodToken.Psp_Product = "14"
-	CreatePaymentMethodToken.Psp_CardInputDetails = cardInputDetails
-	CreatePaymentMethodToken.Psp_ClientSession = "iYgdiXyl56vszeEpCRGmS1JiNYg1xSnYXzQuiFWP4Q2nTwbPiWwZruUzXmqrXYR9"
-
-	resp, err := service.CreatePaymentMethodToken(CreatePaymentMethodToken)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendRecachePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	RecachePaymentMethodToken := npsSdk.NewRequerimientoStruct_RecachePaymentMethodToken()
-	RecachePaymentMethodToken.Psp_Version = "2.2"
-	RecachePaymentMethodToken.Psp_MerchantId = "psp_test"
-	RecachePaymentMethodToken.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
-	RecachePaymentMethodToken.Psp_ClientSession = "iYgdiXyl56vszeEpCRGmS1JiNYg1xSnYXzQuiFWP4Q2nTwbPiWwZruUzXmqrXYR9"
-	RecachePaymentMethodToken.Psp_CardSecurityCode = "123"
+	psp_Version := reflect.ValueOf(RecachePaymentMethodToken).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_MerchantId := reflect.ValueOf(RecachePaymentMethodToken).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PaymentMethodId := reflect.ValueOf(RecachePaymentMethodToken).Elem().FieldByName("Psp_PaymentMethodId")
+	if psp_PaymentMethodId.IsValid() { psp_PaymentMethodId.SetString("ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt") }
+
+	psp_ClientSession := reflect.ValueOf(RecachePaymentMethodToken).Elem().FieldByName("Psp_ClientSession")
+	if psp_ClientSession.IsValid() { psp_ClientSession.SetString("w9mXsBXOlK5mx340F9WsXVoCTUsila2lqTBeqTwezfkbTt0li4NLXrFeFsbfXO9J") }
+
+	psp_CardSecurityCode := reflect.ValueOf(RecachePaymentMethodToken).Elem().FieldByName("Psp_CardSecurityCode")
+	if psp_CardSecurityCode.IsValid() { psp_CardSecurityCode.SetString("123") }
 
 	resp, err := service.RecachePaymentMethodToken(RecachePaymentMethodToken)
 	if err != nil {
@@ -1136,19 +2102,28 @@ func SendRecachePaymentMethodToken(service *npsSdk.PaymentServicePlatformPortTyp
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendCreatePaymentMethodFromPayment(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	createPaymentMethodFromPayment := npsSdk.NewRequerimientoStruct_CreatePaymentMethodFromPayment()
+	psp_Version := reflect.ValueOf(createPaymentMethodFromPayment).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	createPaymentMethodFromPayment.Psp_Version = "2.2"
-	createPaymentMethodFromPayment.Psp_MerchantId = "psp_test"
-	createPaymentMethodFromPayment.Psp_PosDateTime = "2017-06-19 12:00:00"
-	createPaymentMethodFromPayment.Psp_TransactionId = "1868712"
+	psp_MerchantId := reflect.ValueOf(createPaymentMethodFromPayment).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(createPaymentMethodFromPayment).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_TransactionId := reflect.ValueOf(createPaymentMethodFromPayment).Elem().FieldByName("Psp_TransactionId")
+	if psp_TransactionId.IsValid() { psp_TransactionId.SetString("1868712") }
 
 	resp, err := service.CreatePaymentMethodFromPayment(createPaymentMethodFromPayment)
 	if err != nil {
@@ -1156,18 +2131,28 @@ func SendCreatePaymentMethodFromPayment(service *npsSdk.PaymentServicePlatformPo
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendRetrievePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	RetrievePaymentMethod := npsSdk.NewRequerimientoStruct_RetrievePaymentMethod()
-	RetrievePaymentMethod.Psp_Version = "2.2"
-	RetrievePaymentMethod.Psp_MerchantId = "psp_test"
-	RetrievePaymentMethod.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
-	RetrievePaymentMethod.Psp_PosDateTime = "2016-12-01 12:00:00"
+	psp_Version := reflect.ValueOf(RetrievePaymentMethod).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_MerchantId := reflect.ValueOf(RetrievePaymentMethod).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PaymentMethodId := reflect.ValueOf(RetrievePaymentMethod).Elem().FieldByName("Psp_PaymentMethodId")
+	if psp_PaymentMethodId.IsValid() { psp_PaymentMethodId.SetString("ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt") }
+
+	psp_PosDateTime := reflect.ValueOf(RetrievePaymentMethod).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
 
 	resp, err := service.RetrievePaymentMethod(RetrievePaymentMethod)
 	if err != nil {
@@ -1175,29 +2160,45 @@ func SendRetrievePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) e
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendUpdatePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	UpdatePaymentMethod := npsSdk.NewRequerimientoStruct_UpdatePaymentMethod()
+	psp_Version := reflect.ValueOf(UpdatePaymentMethod).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	UpdatePaymentMethod.Psp_Version = "2.2"
-	UpdatePaymentMethod.Psp_MerchantId = "psp_test"
-	UpdatePaymentMethod.Psp_PosDateTime = "2017-06-19 12:00:00"
+	psp_MerchantId := reflect.ValueOf(UpdatePaymentMethod).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	paymentMethod := npsSdk.NewPaymentMethodInputDetailsStruct()
-	cardInputDetails := npsSdk.NewCardInputDetailsStruct()
-	cardInputDetails.HolderName = "tester"
-	cardInputDetails.ExpirationDate = "1812"
-	cardInputDetails.Number = "4507990000000010"
-	cardInputDetails.SecurityCode = "123"
+	psp_PosDateTime := reflect.ValueOf(UpdatePaymentMethod).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
 
-	paymentMethod.CardInputDetails = cardInputDetails
+	cardInputDetails := npsSdk.NewCardInputUpdateDetailsStruct()
 
-	UpdatePaymentMethod.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
+        holderName := reflect.ValueOf(cardInputDetails).Elem().FieldByName("HolderName")
+	if holderName.IsValid() { holderName.SetString("tester") }
+
+        expirationDate := reflect.ValueOf(cardInputDetails).Elem().FieldByName("ExpirationDate")
+	if expirationDate.IsValid() { expirationDate.SetString("1812") }
+
+        cardNumber := reflect.ValueOf(cardInputDetails).Elem().FieldByName("Number")
+	if cardNumber.IsValid() { cardNumber.SetString("4507990000000010") }
+
+        securityCode := reflect.ValueOf(cardInputDetails).Elem().FieldByName("SecurityCode")
+	if securityCode.IsValid() { securityCode.SetString("123") }
+
+	psp_CardInputDetails := reflect.ValueOf(UpdatePaymentMethod).Elem().FieldByName("Psp_CardInputDetails")
+	if psp_CardInputDetails.IsValid() { psp_CardInputDetails.Set(reflect.ValueOf(cardInputDetails)) }
+
+	psp_PaymentMethodId := reflect.ValueOf(UpdatePaymentMethod).Elem().FieldByName("Psp_PaymentMethodId")
+	if psp_PaymentMethodId.IsValid() { psp_PaymentMethodId.SetString("ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt") }
 
 	resp, err := service.UpdatePaymentMethod(UpdatePaymentMethod)
 	if err != nil {
@@ -1205,8 +2206,11 @@ func SendUpdatePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) err
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
@@ -1214,10 +2218,18 @@ func SendDeletePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) err
 
 	DeletePaymentMethod := npsSdk.NewRequerimientoStruct_DeletePaymentMethod()
 
-	DeletePaymentMethod.Psp_Version = "2.2"
-	DeletePaymentMethod.Psp_MerchantId = "psp_test"
-	DeletePaymentMethod.Psp_PosDateTime = "2017-06-19 12:00:00"
-	DeletePaymentMethod.Psp_PaymentMethodId = "ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt"
+	psp_Version := reflect.ValueOf(DeletePaymentMethod).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
+
+	psp_MerchantId := reflect.ValueOf(DeletePaymentMethod).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(DeletePaymentMethod).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2016-12-01 12:00:00") }
+
+        psp_PaymentMethodId := reflect.ValueOf(DeletePaymentMethod).Elem().FieldByName("Psp_PaymentMethodId")
+	if psp_PaymentMethodId.IsValid() { psp_PaymentMethodId.SetString("ZSUjUAEcb5uQ3qtNSS7N7gyDMPtODkjt") }
+
 
 	resp, err := service.DeletePaymentMethod(DeletePaymentMethod)
 	if err != nil {
@@ -1225,49 +2237,107 @@ func SendDeletePaymentMethod(service *npsSdk.PaymentServicePlatformPortType) err
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendCreateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+        if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+        if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+        if phoneNumber1.IsValid() { phoneNumber1.SetString("52520960") }
 
 	Address := npsSdk.NewAddressStruct()
-	Address.City = "CABA"
-	Address.Country = "ARG"
-	Address.Street = "SellerStreet"
-	Address.HouseNumber = "1234"
+        city := reflect.ValueOf(Address).Elem().FieldByName("City")
+        if city.IsValid() { city.SetString("CABA") }
+
+        country := reflect.ValueOf(Address).Elem().FieldByName("Country")
+        if country.IsValid() { country.SetString("ARG") }
+
+        street := reflect.ValueOf(Address).Elem().FieldByName("Street")
+        if street.IsValid() { street.SetString("SellerStreet") }
+
+        houseNumber := reflect.ValueOf(Address).Elem().FieldByName("HouseNumber")
+        if houseNumber.IsValid() { houseNumber.SetString("1234") }
 
 	PmPerson := npsSdk.NewPersonStruct()
-	PmPerson.FirstName = "Silvina"
-	PmPerson.LastName = "Falconi"
-	PmPerson.PhoneNumber1 = "52520960"
+        pmPersonFirstName := reflect.ValueOf(PmPerson).Elem().FieldByName("FirstName")
+        if pmPersonFirstName.IsValid() { pmPersonFirstName.SetString("Silvina") }
+
+        pmPersonLastName := reflect.ValueOf(PmPerson).Elem().FieldByName("LastName")
+        if pmPersonLastName.IsValid() { pmPersonLastName.SetString("Falconi") }
+
+        pmPersonPhoneNumber1 := reflect.ValueOf(PmPerson).Elem().FieldByName("PhoneNumber1")
+        if pmPersonPhoneNumber1.IsValid() { pmPersonPhoneNumber1.SetString("52520960") }
 
 	PmAddress := npsSdk.NewAddressStruct()
-	PmAddress.City = "CABA"
-	PmAddress.Country = "ARG"
-	PmAddress.Street = "SellerStreet"
-	PmAddress.HouseNumber = "1234"
+        PmAddressCity := reflect.ValueOf(PmAddress).Elem().FieldByName("City")
+        if PmAddressCity.IsValid() { PmAddressCity.SetString("CABA") }
+
+        PmAddressCountry := reflect.ValueOf(PmAddress).Elem().FieldByName("Country")
+        if PmAddressCountry.IsValid() { PmAddressCountry.SetString("ARG") }
+
+        PmAddressStreet := reflect.ValueOf(PmAddress).Elem().FieldByName("Street")
+        if PmAddressStreet.IsValid() { PmAddressStreet.SetString("SellerStreet") }
+
+        PmAddressHouseNumber := reflect.ValueOf(PmAddress).Elem().FieldByName("HouseNumber")
+        if PmAddressHouseNumber.IsValid() { PmAddressHouseNumber.SetString("1234") }
+
+	CardInputDetails := npsSdk.NewCardInputDetailsStruct()
+
+        holderName := reflect.ValueOf(CardInputDetails).Elem().FieldByName("HolderName")
+	if holderName.IsValid() { holderName.SetString("tester") }
+
+        expirationDate := reflect.ValueOf(CardInputDetails).Elem().FieldByName("ExpirationDate")
+	if expirationDate.IsValid() { expirationDate.SetString("1812") }
+
+        cardNumber := reflect.ValueOf(CardInputDetails).Elem().FieldByName("Number")
+	if cardNumber.IsValid() { cardNumber.SetString("4507990000000010") }
+
+        securityCode := reflect.ValueOf(CardInputDetails).Elem().FieldByName("SecurityCode")
+	if securityCode.IsValid() { securityCode.SetString("123") }
 
 	pm := npsSdk.NewPaymentMethodInputDetailsStruct()
-	pm.Address = PmAddress
-	pm.Person = PmPerson
+	address := reflect.ValueOf(pm).Elem().FieldByName("Address")
+	if address.IsValid() { address.Set(reflect.ValueOf(PmAddress)) }
+
+	person := reflect.ValueOf(pm).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(PmPerson)) }
+
+	cardInputDetails := reflect.ValueOf(pm).Elem().FieldByName("CardInputDetails")
+	if cardInputDetails.IsValid() { cardInputDetails.Set(reflect.ValueOf(CardInputDetails)) }
 
 	CreateCustomer := npsSdk.NewRequerimientoStruct_CreateCustomer()
+	psp_Version := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	CreateCustomer.Psp_Version = "2.2"
-	CreateCustomer.Psp_MerchantId = "psp_test"
-	CreateCustomer.Psp_PosDateTime = "2017-06-19 12:00:00"
-	CreateCustomer.Psp_EmailAddress = "CustomerEmail@email.com.ar"
+	psp_MerchantId := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	CreateCustomer.Psp_Person = Person
-	CreateCustomer.Psp_Address = Address
-	CreateCustomer.Psp_PaymentMethod = pm
+	psp_EmailAddress := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_EmailAddress")
+	if psp_EmailAddress.IsValid() { psp_EmailAddress.SetString("pspEmail@emai.com") }
+
+	psp_PosDateTime := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_Person := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_Person")
+	if psp_Person.IsValid() { psp_Person.Set(reflect.ValueOf(Person)) }
+
+	psp_Address := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_Address")
+	if psp_Address.IsValid() { psp_Address.Set(reflect.ValueOf(Address)) }
+
+	psp_PaymentMethod := reflect.ValueOf(CreateCustomer).Elem().FieldByName("Psp_PaymentMethod")
+	if psp_PaymentMethod.IsValid() { psp_PaymentMethod.Set(reflect.ValueOf(pm)) }
 
 	resp, err := service.CreateCustomer(CreateCustomer)
 	if err != nil {
@@ -1275,19 +2345,28 @@ func SendCreateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendRetrieveCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	RetrieveCustomer := npsSdk.NewRequerimientoStruct_RetrieveCustomer()
+	psp_Version := reflect.ValueOf(RetrieveCustomer).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	RetrieveCustomer.Psp_Version = "2.2"
-	RetrieveCustomer.Psp_MerchantId = "psp_test"
-	RetrieveCustomer.Psp_PosDateTime = "2017-06-19 12:00:00"
-	RetrieveCustomer.Psp_CustomerId = "xbqrLYhuPP8PnM5uQDw1GunU4V7rfT9Y"
+	psp_MerchantId := reflect.ValueOf(RetrieveCustomer).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(RetrieveCustomer).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_CustomerId := reflect.ValueOf(RetrieveCustomer).Elem().FieldByName("Psp_CustomerId")
+	if psp_MerchantId.IsValid() { psp_CustomerId.SetString("8H9T839wLt83DldqV0qxCMJC3hwvL8yF") }
 
 	resp, err := service.RetrieveCustomer(RetrieveCustomer)
 	if err != nil {
@@ -1295,50 +2374,96 @@ func SendRetrieveCustomer(service *npsSdk.PaymentServicePlatformPortType) error 
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendUpdateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Person := npsSdk.NewPersonStruct()
-	Person.FirstName = "Silvina"
-	Person.LastName = "Falconi"
-	Person.PhoneNumber1 = "52520960"
+        firstName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
+        if firstName.IsValid() { firstName.SetString("Silvina") }
+
+        lastName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
+        if lastName.IsValid() { lastName.SetString("Falconi") }
+
+        phoneNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
+        if phoneNumber1.IsValid() { phoneNumber1.SetString("123456") }
 
 	Address := npsSdk.NewAddressStruct()
-	Address.City = "CABA"
-	Address.Country = "ARG"
-	Address.Street = "SellerStreet"
-	Address.HouseNumber = "1234"
+        city := reflect.ValueOf(Address).Elem().FieldByName("City")
+        if city.IsValid() { city.SetString("CABA") }
+
+        country := reflect.ValueOf(Address).Elem().FieldByName("Country")
+        if country.IsValid() { country.SetString("ARG") }
+
+        street := reflect.ValueOf(Address).Elem().FieldByName("Street")
+        if street.IsValid() { street.SetString("SellerStreet") }
+
+        houseNumber := reflect.ValueOf(Address).Elem().FieldByName("HouseNumber")
+        if houseNumber.IsValid() { houseNumber.SetString("1234") }
 
 	PmPerson := npsSdk.NewPersonStruct()
-	PmPerson.FirstName = "Silvina"
-	PmPerson.LastName = "Falconi"
-	PmPerson.PhoneNumber1 = "52520960"
+        pmPersonFirstName := reflect.ValueOf(PmPerson).Elem().FieldByName("FirstName")
+        if pmPersonFirstName.IsValid() { pmPersonFirstName.SetString("Silvina") }
+
+        pmPersonLastName := reflect.ValueOf(PmPerson).Elem().FieldByName("LastName")
+        if pmPersonLastName.IsValid() { pmPersonLastName.SetString("Falconi") }
+
+        pmPersonPhoneNumber1 := reflect.ValueOf(PmPerson).Elem().FieldByName("PhoneNumber1")
+        if pmPersonPhoneNumber1.IsValid() { pmPersonPhoneNumber1.SetString("52520960") }
 
 	PmAddress := npsSdk.NewAddressStruct()
-	PmAddress.City = "CABA"
-	PmAddress.Country = "ARG"
-	PmAddress.Street = "SellerStreet"
-	PmAddress.HouseNumber = "1234"
+        PmAddressCity := reflect.ValueOf(PmAddress).Elem().FieldByName("City")
+        if PmAddressCity.IsValid() { PmAddressCity.SetString("CABA") }
+
+        PmAddressCountry := reflect.ValueOf(PmAddress).Elem().FieldByName("Country")
+        if PmAddressCountry.IsValid() { PmAddressCountry.SetString("ARG") }
+
+        PmAddressStreet := reflect.ValueOf(PmAddress).Elem().FieldByName("Street")
+        if PmAddressStreet.IsValid() { PmAddressStreet.SetString("SellerStreet") }
+
+        PmAddressHouseNumber := reflect.ValueOf(PmAddress).Elem().FieldByName("HouseNumber")
+        if PmAddressHouseNumber.IsValid() { PmAddressHouseNumber.SetString("1234") }
 
 	pm := npsSdk.NewPaymentMethodInputDetailsStruct()
-	pm.Address = PmAddress
-	pm.Person = PmPerson
+	paymentMethodToken := reflect.ValueOf(pm).Elem().FieldByName("PaymentMethodToken")
+	if paymentMethodToken.IsValid() { paymentMethodToken.SetString("pm-token_lCY303k0vHvS5W06sPwzgoSHNt0VRrkG") }
+
+	address := reflect.ValueOf(pm).Elem().FieldByName("Address")
+	if address.IsValid() { address.Set(reflect.ValueOf(PmAddress)) }
+
+	person := reflect.ValueOf(pm).Elem().FieldByName("Person")
+	if person.IsValid() { person.Set(reflect.ValueOf(PmPerson)) }
 
 	UpdateCustomer := npsSdk.NewRequerimientoStruct_UpdateCustomer()
+	psp_Version := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	UpdateCustomer.Psp_Version = "2.2"
-	UpdateCustomer.Psp_MerchantId = "psp_test"
-	UpdateCustomer.Psp_PosDateTime = "2017-06-19 12:00:00"
-	UpdateCustomer.Psp_CustomerId = "xbqrLYhuPP8PnM5uQDw1GunU4V7rfT9Y"
-	UpdateCustomer.Psp_EmailAddress = "CustomerEmail@email.com.ar"
+	psp_MerchantId := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	UpdateCustomer.Psp_Person = Person
-	UpdateCustomer.Psp_Address = Address
-	UpdateCustomer.Psp_PaymentMethod = pm
+	psp_PosDateTime := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_CustomerId := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_CustomerId")
+	if psp_CustomerId.IsValid() { psp_CustomerId.SetString("8H9T839wLt83DldqV0qxCMJC3hwvL8yF") }
+
+	psp_EmailAddress := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_EmailAddress")
+	if psp_EmailAddress.IsValid() { psp_EmailAddress.SetString("CustomerEmail@email.com.ar") }
+
+	psp_Person := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_Person")
+	if psp_Person.IsValid() { psp_Person.Set(reflect.ValueOf(Person)) }
+
+	psp_Address := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_Address")
+	if psp_Address.IsValid() { psp_Address.Set(reflect.ValueOf(Address)) }
+
+	psp_PaymentMethod := reflect.ValueOf(UpdateCustomer).Elem().FieldByName("Psp_PaymentMethod")
+	if psp_PaymentMethod.IsValid() { psp_PaymentMethod.Set(reflect.ValueOf(pm)) }
 
 	resp, err := service.UpdateCustomer(UpdateCustomer)
 	if err != nil {
@@ -1346,19 +2471,28 @@ func SendUpdateCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendDeleteCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	DeleteCustomer := npsSdk.NewRequerimientoStruct_DeleteCustomer()
+	psp_Version := reflect.ValueOf(DeleteCustomer).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	DeleteCustomer.Psp_Version = "2.2"
-	DeleteCustomer.Psp_MerchantId = "psp_test"
-	DeleteCustomer.Psp_PosDateTime = "2017-06-19 12:00:00"
-	DeleteCustomer.Psp_CustomerId = "xbqrLYhuPP8PnM5uQDw1GunU4V7rfT9Y"
+	psp_MerchantId := reflect.ValueOf(DeleteCustomer).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(DeleteCustomer).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_CustomerId := reflect.ValueOf(DeleteCustomer).Elem().FieldByName("Psp_CustomerId")
+	if psp_CustomerId.IsValid() { psp_CustomerId.SetString("8H9T839wLt83DldqV0qxCMJC3hwvL8yF") }
 
 	resp, err := service.DeleteCustomer(DeleteCustomer)
 	if err != nil {
@@ -1366,20 +2500,31 @@ func SendDeleteCustomer(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendQueryCardNumber(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	QueryCardNumber := npsSdk.NewRequerimientoStruct_QueryCardNumber()
+	psp_Version := reflect.ValueOf(QueryCardNumber).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	QueryCardNumber.Psp_Version = "2.2"
-	QueryCardNumber.Psp_MerchantId = "psp_test"
-	QueryCardNumber.Psp_PosDateTime = "2017-06-19 12:00:00"
-	QueryCardNumber.Psp_QueryCriteria = "T"
-	QueryCardNumber.Psp_QueryCriteriaId = "76577"
+	psp_MerchantId := reflect.ValueOf(QueryCardNumber).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(QueryCardNumber).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_QueryCriteria := reflect.ValueOf(QueryCardNumber).Elem().FieldByName("Psp_QueryCriteria")
+	if psp_QueryCriteria.IsValid() { psp_QueryCriteria.SetString("T") }
+
+	psp_QueryCriteriaId := reflect.ValueOf(QueryCardNumber).Elem().FieldByName("Psp_QueryCriteriaId")
+	if psp_QueryCriteriaId.IsValid() { psp_QueryCriteriaId.SetString("76577") }
 
 	resp, err := service.QueryCardNumber(QueryCardNumber)
 	if err != nil {
@@ -1387,20 +2532,31 @@ func SendQueryCardNumber(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendQueryCardDetails(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	QueryCardDetails := npsSdk.NewRequerimientoStruct_QueryCardDetails()
+	psp_Version := reflect.ValueOf(QueryCardDetails).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	QueryCardDetails.Psp_Version = "2.2"
-	QueryCardDetails.Psp_MerchantId = "psp_test"
-	QueryCardDetails.Psp_PosDateTime = "2017-06-19 12:00:00"
-	QueryCardDetails.Psp_QueryCriteria = "T"
-	QueryCardDetails.Psp_QueryCriteriaId = "76577"
+	psp_MerchantId := reflect.ValueOf(QueryCardDetails).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(QueryCardDetails).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_QueryCriteria := reflect.ValueOf(QueryCardDetails).Elem().FieldByName("Psp_QueryCriteria")
+	if psp_QueryCriteria.IsValid() { psp_QueryCriteria.SetString("T") }
+
+	psp_QueryCriteriaId := reflect.ValueOf(QueryCardDetails).Elem().FieldByName("Psp_QueryCriteriaId")
+	if psp_QueryCriteriaId.IsValid() { psp_QueryCriteriaId.SetString("76577") }
 
 	resp, err := service.QueryCardDetails(QueryCardDetails)
 	if err != nil {
@@ -1408,20 +2564,31 @@ func SendQueryCardDetails(service *npsSdk.PaymentServicePlatformPortType) error 
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendSimpleQueryTx(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	SimpleQueryTx := npsSdk.NewRequerimientoStruct_SimpleQueryTx()
+	psp_Version := reflect.ValueOf(SimpleQueryTx).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	SimpleQueryTx.Psp_Version = "2.2"
-	SimpleQueryTx.Psp_MerchantId = "psp_test"
-	SimpleQueryTx.Psp_PosDateTime = "2017-06-19 12:00:00"
-	SimpleQueryTx.Psp_QueryCriteria = "T"
-	SimpleQueryTx.Psp_QueryCriteriaId = "1868712"
+	psp_MerchantId := reflect.ValueOf(SimpleQueryTx).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(SimpleQueryTx).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_QueryCriteria := reflect.ValueOf(SimpleQueryTx).Elem().FieldByName("Psp_QueryCriteria")
+	if psp_QueryCriteria.IsValid() { psp_QueryCriteria.SetString("T") }
+
+	psp_QueryCriteriaId := reflect.ValueOf(SimpleQueryTx).Elem().FieldByName("Psp_QueryCriteriaId")
+	if psp_QueryCriteriaId.IsValid() { psp_QueryCriteriaId.SetString("160117") }
 
 	resp, err := service.SimpleQueryTx(SimpleQueryTx)
 	if err != nil {
@@ -1429,11 +2596,21 @@ func SendSimpleQueryTx(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-	if resp.Psp_Transaction != nil && len(resp.Psp_Transaction.Psp_AuthorizationCode) > 0 {
-		fmt.Printf("Psp_AuthorizationCode = [%s]\n", resp.Psp_Transaction.Psp_AuthorizationCode)
-	}
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
+
+        ptrTransactions := reflect.ValueOf(resp).Elem().FieldByName("Psp_Transaction")
+        respTransactions := ptrTransactions.Elem()
+        if respTransactions.IsValid() {
+
+	  psp_AuthorizationCode := respTransactions.FieldByName("Psp_AuthorizationCode")
+          if psp_AuthorizationCode.IsValid() {
+		fmt.Printf("Psp_AuthorizationCode = [%s]\n", psp_AuthorizationCode.String())
+          }
+        }
 
 	return nil
 }
@@ -1441,12 +2618,20 @@ func SendSimpleQueryTx(service *npsSdk.PaymentServicePlatformPortType) error {
 func SendQueryTxs(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	QueryTxs := npsSdk.NewRequerimientoStruct_QueryTxs()
+	psp_Version := reflect.ValueOf(QueryTxs).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	QueryTxs.Psp_Version = "2.2"
-	QueryTxs.Psp_MerchantId = "psp_test"
-	QueryTxs.Psp_PosDateTime = "2017-06-19 12:00:00"
-	QueryTxs.Psp_QueryCriteria = "T"
-	QueryTxs.Psp_QueryCriteriaId = "1868712"
+	psp_MerchantId := reflect.ValueOf(QueryTxs).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
+
+	psp_PosDateTime := reflect.ValueOf(QueryTxs).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_QueryCriteria := reflect.ValueOf(QueryTxs).Elem().FieldByName("Psp_QueryCriteria")
+	if psp_QueryCriteria.IsValid() { psp_QueryCriteria.SetString("T") }
+
+	psp_QueryCriteriaId := reflect.ValueOf(QueryTxs).Elem().FieldByName("Psp_QueryCriteriaId")
+	if psp_QueryCriteriaId.IsValid() { psp_QueryCriteriaId.SetString("160117") }
 
 	resp, err := service.QueryTxs(QueryTxs)
 	if err != nil {
@@ -1454,26 +2639,40 @@ func SendQueryTxs(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendGetInstallmentsOptions(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	GetInstallmentsOptions := npsSdk.NewRequerimientoStruct_GetInstallmentsOptions()
+	psp_Version := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	GetInstallmentsOptions.Psp_Version = "2.2"
-	GetInstallmentsOptions.Psp_MerchantId = "psp_test"
-	GetInstallmentsOptions.Psp_PosDateTime = "2017-06-19 12:00:00"
+	psp_MerchantId := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	GetInstallmentsOptions.Psp_Amount = "1000"
-	GetInstallmentsOptions.Psp_Product = "14"
-	GetInstallmentsOptions.Psp_Currency = "032"
-	GetInstallmentsOptions.Psp_Country = "ARG"
+	psp_PosDateTime := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
 
-	GetInstallmentsOptions.Psp_ClientSession = "iYgdiXyl56vszeEpCRGmS1JiNYg1xSnYXzQuiFWP4Q2nTwbPiWwZruUzXmqrXYR9"
+	psp_Amount := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_Amount")
+	if psp_Amount.IsValid() { psp_Amount.SetString("1000") }
+
+	psp_Product := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_Product")
+	if psp_Product.IsValid() { psp_Product.SetString("14") }
+
+	psp_Currency := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_Currency")
+	if psp_Currency.IsValid() { psp_Currency.SetString("032") }
+
+	psp_Country := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_Country")
+	if psp_Country.IsValid() { psp_Country.SetString("ARG") }
+
+	psp_ClientSession := reflect.ValueOf(GetInstallmentsOptions).Elem().FieldByName("Psp_ClientSession")
+	if psp_ClientSession.IsValid() { psp_ClientSession.SetString("w9mXsBXOlK5mx340F9WsXVoCTUsila2lqTBeqTwezfkbTt0li4NLXrFeFsbfXO9J") }
 
 	resp, err := service.GetInstallmentsOptions(GetInstallmentsOptions)
 	if err != nil {
@@ -1481,22 +2680,31 @@ func SendGetInstallmentsOptions(service *npsSdk.PaymentServicePlatformPortType) 
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
 
 func SendGetIINDetails(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	GetIINDetails := npsSdk.NewRequerimientoStruct_GetIINDetails()
+	psp_Version := reflect.ValueOf(GetIINDetails).Elem().FieldByName("Psp_Version")
+	if psp_Version.IsValid() { psp_Version.SetString("2.2") }
 
-	GetIINDetails.Psp_Version = "2.2"
-	GetIINDetails.Psp_MerchantId = "psp_test"
-	GetIINDetails.Psp_PosDateTime = "2017-06-19 12:00:00"
-	GetIINDetails.Psp_IIN = "450799"
+	psp_MerchantId := reflect.ValueOf(GetIINDetails).Elem().FieldByName("Psp_MerchantId")
+	if psp_MerchantId.IsValid() { psp_MerchantId.SetString("psp_test") }
 
-	GetIINDetails.Psp_ClientSession = "iYgdiXyl56vszeEpCRGmS1JiNYg1xSnYXzQuiFWP4Q2nTwbPiWwZruUzXmqrXYR9"
+	psp_PosDateTime := reflect.ValueOf(GetIINDetails).Elem().FieldByName("Psp_PosDateTime")
+	if psp_PosDateTime.IsValid() { psp_PosDateTime.SetString("2017-06-19 12:00:00") }
+
+	psp_IIN := reflect.ValueOf(GetIINDetails).Elem().FieldByName("Psp_IIN")
+	if psp_IIN.IsValid() { psp_IIN.SetString("450799") }
+
+	psp_ClientSession := reflect.ValueOf(GetIINDetails).Elem().FieldByName("Psp_ClientSession")
+	if psp_ClientSession.IsValid() { psp_ClientSession.SetString("w9mXsBXOlK5mx340F9WsXVoCTUsila2lqTBeqTwezfkbTt0li4NLXrFeFsbfXO9J") }
 
 	resp, err := service.GetIINDetails(GetIINDetails)
 	if err != nil {
@@ -1504,11 +2712,14 @@ func SendGetIINDetails(service *npsSdk.PaymentServicePlatformPortType) error {
 	}
 
 	fmt.Printf("\n")
-	fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
-	fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
-
+        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
+        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
+        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
+        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
+        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
 	return nil
 }
+
 func main() {
 
 	/*******************************************************************
@@ -1524,7 +2735,9 @@ func main() {
 	  **********************************************************************/
 
 	err := npsSdk.Configure(map[string]interface{}{
-		"environment": CONSTANTS.SANDBOX_ENV,
+		//"environment": CONSTANTS.LOCAL_ENV,
+		//"environment": CONSTANTS.STAGING_ENV,
+               "environment": CONSTANTS.SANDBOX_ENV,
 		"secret_key":  "IeShlZMDk8mp8VA6vy41mLnVggnj1yqHcJyNqIYaRINZnXdiTfhF0Ule9WNAUCR6",
 		"debug":       true,
 		"log_level":   CONSTANTS.DEBUG,
@@ -1567,7 +2780,7 @@ func main() {
 
 	//err = SendCreateCustomer(service)
 	//err = SendRetrieveCustomer(service)
-	err = SendUpdateCustomer(service)
+	//err = SendUpdateCustomer(service)
 	//err = SendDeleteCustomer(service)
 
 	//err = SendQueryCardNumber(service)
@@ -1576,7 +2789,7 @@ func main() {
 	//err = SendSimpleQueryTx(service)
 	//err = SendQueryTxs(service)
 
-	//err = SendGetInstallmentsOptions(service)
+	err = SendGetInstallmentsOptions(service)
 	//err = SendGetIINDetails(service)
 
 	if err != nil {

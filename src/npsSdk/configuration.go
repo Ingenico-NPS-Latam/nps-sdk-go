@@ -3,7 +3,7 @@ package npsSdk
 import (
 	"errors"
 	"log"
-	CONSTANTS "npsSdk/constants"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk/constants"
 	"os"
 )
 
@@ -124,4 +124,8 @@ func Configure(m map[string]interface{}) error {
 
 func (c *MyConfiguration) GetSecretKey() string {
 	return c.secret_key
+}
+
+func (c *MyConfiguration) GetEnv() int {
+	return c.environment
 }

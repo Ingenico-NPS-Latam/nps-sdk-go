@@ -1,7 +1,7 @@
 package constants
 
 const (
-	SDK_VERSION                        = "1.0"
+	SDK_VERSION                        = "1.1.1"
 	SDK_NAME                           = "GOLANG SDK "
 	PAY_ONLINE_2P                      = "PayOnLine_2p"
 	AUTHORIZE_2P                       = "Authorize_2p"
@@ -51,8 +51,8 @@ const (
 	STAGING_ENV    = 1
 	SANDBOX_ENV    = 2
 
-	PRODUCTION_URL = "https://sandbox.nps.com.ar:443/ws.php"
-	STAGING_URL    = "https://sandbox.nps.com.ar:443/ws.php"
-	SANDBOX_URL    = "https://sandbox.nps.com.ar:443/ws.php"
+	PRODUCTION_URL = "https://services2.nps.com.ar/ws.php"
+	STAGING_URL    = "https://implementacion.nps.com.ar/ws.php"
+	SANDBOX_URL    = "https://sandbox.nps.com.ar/ws.php"
 	DEF_TIMEOUT    = 60
 )
