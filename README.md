@@ -1,12 +1,12 @@
 #  Go SDK
+ 
 
 ##  Avalilability
 Supports GO 1.7 and above
 
 ##  How to Install
 
-* [Download binary release](https://github.com/Ingenico-NPS-Latam/nps-sdk-go/releases)
-* Download and build locally: `go get github.com/Ingenico-NPS-Latam/nps-sdk-go/src/npsSdk`
+* Download and build locally: `go get github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk`
 
 ##  Configuration
 
@@ -18,10 +18,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -46,183 +44,89 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
-	Person := npsSdk.NewPersonStruct()
 
-	fName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
-	if fName.IsValid() { fName.SetString("Silvina") }
+  Person := npsSdk.NewPersonStruct()
+  Person.FirstName = "First Name"
+  Person.LastName = "Last Name"
+  Person.PhoneNumber1 = "52520960"
+  
+  AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
+  AmountAdditionalDetails.Tip = "10"
+  AmountAdditionalDetails.Discount = "5"
+  
+  Billing := npsSdk.NewBillingDetailsStruct()
+  Billing.Invoice = "100001234"
+  Billing.InvoiceAmount = "990"
+  Billing.InvoiceCurrency = "032"
+  Billing.Person = Person
+  
+  SellerAddress := npsSdk.NewAddressStruct()
+  SellerAddress.City = "CABA"
+  SellerAddress.Country = "ARG"
+  SellerAddress.Street = "SellerStreet"
+  SellerAddress.HouseNumber = "1234"
 
-	lName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
-	if lName.IsValid() { lName.SetString("Falconi") }
+  SellerDetails := npsSdk.NewSellerDetailsStruct()
+  SellerDetails.Name = "Seller Name"
+  SellerDetails.Address = SellerAddress
+  
+  MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
+  MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
+  MerchantAdditionalDetails.SellerDetails = SellerDetails
+  CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
+  CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
+  
+  order1 := npsSdk.NewOrderItemStruct()
+  order1.Description = "producto 1"
+  order1.UnitPrice = "10"
+  order2 := npsSdk.NewOrderItemStruct()
+  order2.Description = "producto 2"
+  order2.UnitPrice = "20"
 
-	phNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
-	if phNumber1.IsValid() { phNumber1.SetString("52520960") }
+  OrderDetails := npsSdk.NewOrderDetailsStruct()
+  OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
+  OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
+  OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
+  OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
-	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
-	tip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
-	if tip.IsValid() { tip.SetString("10") }
+  payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
 
-	discount := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Discount")
-	if discount.IsValid() { discount.SetString("5") }
+  payOnline2p.Psp_Version = "2.2"
+  payOnline2p.Psp_MerchantId = "psp_test"
+  payOnline2p.Psp_TxSource = "WEB"
+  payOnline2p.Psp_MerchTxRef = "ORDER56666-3"
+  payOnline2p.Psp_MerchOrderId = "ORDER56666"
+  payOnline2p.Psp_Amount = "1000"
+  payOnline2p.Psp_NumPayments = "1"
+  payOnline2p.Psp_Currency = "032"
+  payOnline2p.Psp_Country = "ARG"
+  payOnline2p.Psp_Product = "14"
+  payOnline2p.Psp_CustomerMail = "yourmail@gmail"
+  payOnline2p.Psp_CardNumber = "4507990000000010"
+  payOnline2p.Psp_CardExpDate = "1903"
+  payOnline2p.Psp_CardSecurityCode = "306"
+  payOnline2p.Psp_SoftDescriptor = "Sol Tropical E"
+  payOnline2p.Psp_PosDateTime = "2016-12-01 12:00:00"
 
-	Billing := npsSdk.NewBillingDetailsStruct()
-	Invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
-	if Invoice.IsValid() { Invoice.SetString("100001234") }
+  payOnline2p.Psp_OrderDetails = OrderDetails
+  payOnline2p.Psp_CustomerAdditionalDetails = CustomerAdditionalDetails
+  payOnline2p.Psp_AmountAdditionalDetails = AmountAdditionalDetails
+  payOnline2p.Psp_BillingDetails = Billing
+  payOnline2p.Psp_MerchantAdditionalDetails = MerchantAdditionalDetails
+  resp, err := service.PayOnLine_2p(payOnline2p)
+  if err != nil {
+    return err
+  }
 
-	InvoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
-	if InvoiceAmount.IsValid() { InvoiceAmount.SetString("990") }
-
-	InvoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
-	if InvoiceCurrency.IsValid() { InvoiceCurrency.SetString("032") }
-
-	BillingPerson := reflect.ValueOf(Billing).Elem().FieldByName("Person")
-	if BillingPerson.IsValid() { BillingPerson.Set(reflect.ValueOf(Person)) }
-
-	SellerAddress := npsSdk.NewAddressStruct()
-	City := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
-	if City.IsValid() { City.SetString("CABA") }
-
-	Country := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
-	if Country.IsValid() { Country.SetString("ARG") }
-
-	Street := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
-	if Street.IsValid() { Street.SetString("SellerStreet") }
-
-	HouseNumber := reflect.ValueOf(SellerAddress).Elem().FieldByName("HouseNumber")
-	if HouseNumber.IsValid() { HouseNumber.SetString("1234") }
-
-	SellerDetails := npsSdk.NewSellerDetailsStruct()
-	SellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
-	if SellerDetailsName.IsValid() { SellerDetailsName.SetString("Seller Name") }
-
-	SellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
-	if SellerDetailsAddress.IsValid() { SellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
-
-	MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
-	ShoppingCartInfo := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("ShoppingCartInfo")
-	if ShoppingCartInfo.IsValid() { ShoppingCartInfo.SetString("ShoppingCartInfo") }
-
-	MerchantAdditionalDetailsSellerDetails := reflect.ValueOf(MerchantAdditionalDetails).Elem().FieldByName("SellerDetails")
-	if MerchantAdditionalDetailsSellerDetails.IsValid() { MerchantAdditionalDetailsSellerDetails.Set(reflect.ValueOf(SellerDetails)) }
-
-	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-	EmailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
-	if EmailAddress.IsValid() { EmailAddress.SetString("mailAddr@mail.com.ar") }
-
-	OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
-
-	Items := reflect.ValueOf(OrderItems).Elem().FieldByName("Items")
-	
-	if Items.Kind() == reflect.Slice {
-          st := Items.Type()
-          sliceType := st.Elem()
-          if sliceType.Kind() == reflect.Ptr {
-            sliceType = sliceType.Elem()
-          }
-
-          order1 := reflect.New(sliceType)
-          order1.Elem().FieldByName("Description").SetString("producto 1") 
-          order1.Elem().FieldByName("UnitPrice").SetString("10") 
-
-          Items.Set(reflect.Append(Items, order1))
-
-          order2 := reflect.New(sliceType)
-          order2.Elem().FieldByName("Description").SetString("producto 2") 
-          order2.Elem().FieldByName("UnitPrice").SetString("20") 
-
-          Items.Set(reflect.Append(Items, order2))
-	}
-
-	OrderDetails := npsSdk.NewOrderDetailsStruct()    
-	OrderDetailsItems := reflect.ValueOf(OrderDetails).Elem().FieldByName("OrderItems")
-	if OrderDetailsItems.IsValid() { OrderDetailsItems.Set(reflect.ValueOf(OrderItems)) }
-
-	payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
-	Psp_Version := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Version")
-	if Psp_Version.IsValid() { Psp_Version.SetString("2.2")}
-
-	Psp_MerchantId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchantId")
-	if Psp_MerchantId.IsValid() { Psp_MerchantId.SetString("psp_test")}
-
-	Psp_TxSource := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_TxSource")
-	if Psp_TxSource.IsValid() { Psp_TxSource.SetString("WEB")}
-
-	Psp_MerchTxRef := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchTxRef")
-        t := time.Now()
- 	if Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString(t.Format("20060102150405")) }
-
-	Psp_MerchOrderId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchOrderId")
-	if Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("ORDER56666")}
-
-	Psp_Amount := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Amount")
-	if Psp_Amount.IsValid() { Psp_Amount.SetString("1000")}
-
-	Psp_NumPayments := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_NumPayments")
-	if Psp_NumPayments.IsValid() { Psp_NumPayments.SetString("1")}
-
-	Psp_Currency := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Currency")
-	if Psp_Currency.IsValid() { Psp_Currency.SetString("032")}
-
-	Psp_Country := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Country")
-	if Psp_Country.IsValid() { Psp_Country.SetString("ARG")}
-
-	Psp_Product := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Product")
-	if Psp_Product.IsValid() { Psp_Product.SetString("14")}
-
-	Psp_CustomerMail := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CustomerMail")
-	if Psp_CustomerMail.IsValid() { Psp_CustomerMail.SetString("yourmail@gmail")}
-
-	Psp_CardNumber := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardNumber")
-	if Psp_CardNumber.IsValid() { Psp_CardNumber.SetString("4507990000000010")}
-
-	Psp_CardExpDate := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardExpDate")
-	if Psp_CardExpDate.IsValid() { Psp_CardExpDate.SetString("1903")}
-
-	Psp_CardSecurityCode := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardSecurityCode")
-	if Psp_CardSecurityCode.IsValid() { Psp_CardSecurityCode.SetString("306")}
-
-	Psp_SoftDescriptor := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_SoftDescriptor")
-	if Psp_SoftDescriptor.IsValid() { Psp_SoftDescriptor.SetString("Sol Tropical E")}
-
-	Psp_PosDateTime := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_PosDateTime")
-	if Psp_PosDateTime.IsValid() { Psp_PosDateTime.SetString("2016-12-01 12:00:00")}
-
-        Psp_UserId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_UserId")
-        if Psp_UserId.IsValid() { Psp_UserId.SetString("SFALCONI")} 
-
-	Psp_OrderDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_OrderDetails")
-	if Psp_OrderDetails.IsValid() {  Psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
-
-	Psp_CustomerAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CustomerAdditionalDetails")
-	if Psp_CustomerAdditionalDetails.IsValid() {  Psp_CustomerAdditionalDetails.Set(reflect.ValueOf(CustomerAdditionalDetails)) }
-
-	Psp_AmountAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_AmountAdditionalDetails")
-	if Psp_AmountAdditionalDetails.IsValid() {  Psp_AmountAdditionalDetails.Set(reflect.ValueOf(AmountAdditionalDetails)) }
-
-	Psp_BillingDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_BillingDetails")
-	if Psp_BillingDetails.IsValid() {  Psp_BillingDetails.Set(reflect.ValueOf(Billing)) }
-
-	Psp_MerchantAdditionalDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchantAdditionalDetails")
-	if Psp_MerchantAdditionalDetails.IsValid() {  Psp_MerchantAdditionalDetails.Set(reflect.ValueOf(MerchantAdditionalDetails)) }
-
-	resp, err := service.PayOnLine_2p(payOnline2p)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("\n")
-        Psp_ResponseCod := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseCod")
-        Psp_ResponseMsg := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseMsg")
-        Psp_ResponseExtended := reflect.ValueOf(resp).Elem().FieldByName("Psp_ResponseExtended")
-        fmt.Printf("Response = [%s] [%s]\n", Psp_ResponseCod.String(), Psp_ResponseMsg.String())
-        fmt.Printf("Extended = [%s]\n", Psp_ResponseExtended.String())
-	return nil
+  fmt.Printf("\n")
+  fmt.Printf("Response = [%s] [%s]\n", resp.Psp_ResponseCod, resp.Psp_ResponseMsg)
+  fmt.Printf("Extended = [%s]\n", resp.Psp_ResponseExtended)
+  return nil
 }
 
 func main() {
@@ -257,10 +161,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -303,12 +205,13 @@ An example using your project logger.
 package main
 
 import (
+	"os"
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"os"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
+
 )
 
 func main() {
@@ -322,7 +225,7 @@ func main() {
   appLog.SetOutput(f)
   appLog.Println("MAIN begin")
  
-  err := npsSdk.Configure(map[string]interface{}{
+  err = npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
 	  "debug":       true,
@@ -341,10 +244,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"os"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -366,10 +268,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -393,10 +293,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -419,10 +317,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"npsSdk"
-	CONSTANTS "npsSdk/constants"
-	"reflect"
-	"time"
+	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
+	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
 )
 
 func main() {
@@ -435,5 +331,4 @@ func main() {
 	  "proxy_password": "proxyPassword",
 	})
 }
-
 ```
