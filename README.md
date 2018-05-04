@@ -205,7 +205,6 @@ An example using your project logger.
 package main
 
 import (
-	"os"
 	"fmt"
 	"log"
 	"os"
