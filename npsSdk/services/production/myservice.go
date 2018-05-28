@@ -9,7 +9,6 @@ import (
 var _ time.Time
 var _ xml.Name
 
-
 func NewTaxesRequestStruct() *TaxesRequestStruct {
 	p := new(TaxesRequestStruct)
 	p.Xsi_Type = "tns.TaxesRequestStruct"
@@ -389,6 +388,16 @@ func NewRequerimientoStruct_NotifyFraudScreeningReview() *RequerimientoStruct_No
 	return p
 }
 
+type VaultReference2pStruct struct {
+	XMLName xml.Name `xml:"psp_VaultReference"`
+
+	PaymentMethodToken string `xml:"PaymentMethodToken,omitempty"`
+
+	PaymentMethodId string `xml:"PaymentMethodId,omitempty"`
+
+	CustomerId string `xml:"CustomerId,omitempty"`
+}
+
 type TaxesRequestStruct struct {
 	Xsi_Type string `xml:"xsi:type,attr"`
 
@@ -419,7 +428,7 @@ type AmountAdditionalDetailsRequestStruct struct {
 }
 
 type AddressStruct struct {
-	XMLName xml.Name //`xml:"AddressStruct"`
+	XMLName xml.Name 
 
 	Street string `xml:"Street,omitempty"`
 
@@ -439,6 +448,8 @@ type AddressStruct struct {
 type SellerDetailsStruct struct {
 	XMLName xml.Name `xml:"SellerDetails"`
 
+	ExternalReferenceId string `xml:"ExternalReferenceId,omitempty"`
+
 	IDNumber string `xml:"IDNumber,omitempty"`
 
 	IDType string `xml:"IDType,omitempty"`
@@ -450,6 +461,12 @@ type SellerDetailsStruct struct {
 	PurchaseDescription string `xml:"PurchaseDescription,omitempty"`
 
 	Address *AddressStruct
+
+	EmailAddress string `xml:"EmailAddress,omitempty"`
+
+	PhoneNumber1 string `xml:"PhoneNumber1,omitempty"`
+
+	PhoneNumber2 string `xml:"PhoneNumber2,omitempty"`
 
 	MCC string `xml:"MCC,omitempty"`
 
@@ -499,7 +516,7 @@ type CustomerAdditionalDetailsStruct struct {
 }
 
 type PersonStruct struct {
-	XMLName xml.Name //`xml:"PersonStruct"`
+	XMLName xml.Name
 
 	FirstName string `xml:"FirstName,omitempty"`
 
@@ -563,7 +580,6 @@ type ShippingDetailsStruct struct {
 }
 
 type OrderItemStruct struct {
-	//XMLName xml.Name `xml:"OrderItemStruct"`
 	Xsi_Type string `xml:"xsi:type,attr"`
 
 	Quantity string `xml:"Quantity,omitempty"`
@@ -582,7 +598,6 @@ type OrderItemStruct struct {
 }
 
 type ArrayOf_OrderItemStruct struct {
-	//	XMLName xml.Name `xml:"ArrayOf_OrderItemStruct"`
 	Xsi_Type_SOAP     string `xml:"xsi:type,attr"`
 	Xsi_Type_SOAP_ARR string `xml:"SOAP-ENC:arrayType,attr"`
 
@@ -617,6 +632,8 @@ type LegStruct struct {
 	BaseFare string `xml:"BaseFare,omitempty"`
 
 	BaseFareCurrency string `xml:"BaseFareCurrency,omitempty"`
+
+	StopoverCode string `xml:"StopoverCode,omitempty"`
 }
 
 type ArrayOf_LegStruct struct {
@@ -625,7 +642,6 @@ type ArrayOf_LegStruct struct {
 
 	Items []*LegStruct `xml:"item,omitempty"`
 }
-
 type PassengerStruct struct {
 	XMLName xml.Name `xml:"Passenger"`
 
@@ -707,16 +723,6 @@ type AirlineDetailsStruct struct {
 	Ticket *AirlineTicketStruct
 }
 
-type VaultReference2pStruct struct {
-	XMLName xml.Name `xml:"psp_VaultReference"`
-
-	PaymentMethodToken string `xml:"PaymentMethodToken,omitempty"`
-
-	PaymentMethodId string `xml:"PaymentMethodId,omitempty"`
-
-	CustomerId string `xml:"CustomerId,omitempty"`
-}
-
 type ServiceStruct_PayOnLine_2p struct {
 	XMLName xml.Name `xml:"PayOnLine_2p"`
 
@@ -724,7 +730,6 @@ type ServiceStruct_PayOnLine_2p struct {
 }
 
 type RequerimientoStruct_PayOnLine_2p struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RequerimientoStruct_PayOnLine_2p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -813,6 +818,8 @@ type RequerimientoStruct_PayOnLine_2p struct {
 
 	Psp_SecureHash string `xml:"psp_SecureHash,omitempty"`
 
+	Psp_VaultReference *VaultReference2pStruct
+
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsRequestStruct
 
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
@@ -826,8 +833,6 @@ type RequerimientoStruct_PayOnLine_2p struct {
 	Psp_OrderDetails *OrderDetailsStruct
 
 	Psp_AirlineDetails *AirlineDetailsStruct
-
-	Psp_VaultReference *VaultReference2pStruct
 }
 
 type TaxesResponseStruct struct {
@@ -995,7 +1000,6 @@ type ServiceStruct_Authorize_2p struct {
 }
 
 type RequerimientoStruct_Authorize_2p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_Authorize_2p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -1082,6 +1086,8 @@ type RequerimientoStruct_Authorize_2p struct {
 
 	Psp_SecureHash string `xml:"psp_SecureHash,omitempty"`
 
+	Psp_VaultReference *VaultReference2pStruct
+
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsRequestStruct
 
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
@@ -1095,8 +1101,6 @@ type RequerimientoStruct_Authorize_2p struct {
 	Psp_OrderDetails *OrderDetailsStruct
 
 	Psp_AirlineDetails *AirlineDetailsStruct
-
-	Psp_VaultReference *VaultReference2pStruct
 }
 
 type ServiceRespuestaStruct_Authorize_2p struct {
@@ -1168,8 +1172,6 @@ type RespuestaStruct_Authorize_2p struct {
 
 	Psp_PosDateTime string `xml:"psp_PosDateTime,omitempty"`
 
-	Psp_CreatedAt string `xml:"psp_CreatedAt,omitempty"`
-
 	Psp_Plan string `xml:"psp_Plan,omitempty"`
 
 	Psp_PromotionCode string `xml:"psp_PromotionCode,omitempty"`
@@ -1181,6 +1183,8 @@ type RespuestaStruct_Authorize_2p struct {
 	Psp_AmexArg_AVS_Result string `xml:"psp_AmexArg_AVS_Result,omitempty"`
 
 	Psp_MasterArg_AVS_Result string `xml:"psp_MasterArg_AVS_Result,omitempty"`
+
+	Psp_CreatedAt string `xml:"psp_CreatedAt,omitempty"`
 
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsResponseStruct
 
@@ -1196,7 +1200,6 @@ type ServiceStruct_BankPayment_2p struct {
 }
 
 type RequerimientoStruct_BankPayment_2p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_BankPayment_2p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -1266,28 +1269,6 @@ type RequerimientoStruct_BankPayment_2p struct {
 	Psp_OrderDetails *OrderDetailsStruct
 
 	Psp_AirlineDetails *AirlineDetailsStruct
-}
-
-type ServiceRespuestaStruct_BankPayment_2p_BillingDetails struct {
-	XMLName xml.Name `xml:"BankPayment_2p_BillingDetailsResponse"`
-
-	PSP_RespuestaStruct_BankPayment_2p_BillingDetails *RespuestaStruct_BankPayment_2p_BillingDetails
-}
-
-type RespuestaStruct_BankPayment_2p_BillingDetails struct {
-	XMLName xml.Name `xml:"Respuesta"`
-
-	Invoice string `xml:"Invoice,omitempty"`
-
-	InvoiceDate string `xml:"InvoiceDate,omitempty"`
-
-	InvoiceAmount string `xml:"InvoiceAmount,omitempty"`
-
-	InvoiceCurrency string `xml:"InvoiceCurrency,omitempty"`
-
-	Person *PersonStruct
-
-	Address *AddressStruct
 }
 
 type ServiceRespuestaStruct_BankPayment_2p struct {
@@ -1356,18 +1337,10 @@ type RespuestaStruct_BankPayment_2p struct {
 	Psp_CreatedAt string `xml:"psp_CreatedAt,omitempty"`
 
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsResponseStruct
-
-	Psp_BillingDetails *RespuestaStruct_BankPayment_2p_BillingDetails
-}
-
-type VaultReference3pStruct struct {
-	XMLName xml.Name `xml:"psp_VaultReference"`
-
-	CustomerId string `xml:"CustomerId,omitempty"`
 }
 
 type RequerimientoStruct_SplitPayOnLine_2p_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RequerimientoStruct_SplitPayOnLine_2p_Transactions"`
+	//XMLName xml.Name `xml:"RequerimientoStruct_SplitPayOnLine_2p_Transactions"`
 
 	Psp_MerchantId string `xml:"psp_MerchantId,omitempty"`
 
@@ -1399,13 +1372,13 @@ type RequerimientoStruct_SplitPayOnLine_2p_Transactions struct {
 
 	Psp_SoftDescriptor string `xml:"psp_SoftDescriptor,omitempty"`
 
+	Psp_VaultReference *VaultReference2pStruct
+
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsRequestStruct
 
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
 
 	Psp_BillingDetails *BillingDetailsStruct
-
-	Psp_VaultReference *VaultReference2pStruct
 }
 
 type ArrayOf_RequerimientoStruct_SplitPayOnLine_2p_Transactions struct {
@@ -1422,7 +1395,6 @@ type ServiceStruct_SplitPayOnLine_2p struct {
 }
 
 type RequerimientoStruct_SplitPayOnLine_2p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_SplitPayOnLine_2p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -1471,7 +1443,7 @@ type RequerimientoStruct_SplitPayOnLine_2p struct {
 
 	Psp_SecureHash string `xml:"psp_SecureHash,omitempty"`
 
-	Psp_VaultReference *VaultReference3pStruct
+	Psp_VaultReference *VaultReference2pStruct
 
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
 
@@ -1489,13 +1461,21 @@ type RequerimientoStruct_SplitPayOnLine_2p struct {
 }
 
 type RespuestaStruct_SplitPayOnLine_2p_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RespuestaStruct_SplitPayOnLine_2p_Transactions"`
+	//XMLName xml.Name `xml:"RespuestaStruct_SplitPayOnLine_2p_Transactions"`
+
+	Psp_ResponseCod string `xml:"psp_ResponseCod,omitempty"`
+
+	Psp_ResponseMsg string `xml:"psp_ResponseMsg,omitempty"`
+
+	Psp_ResponseExtended string `xml:"psp_ResponseExtended,omitempty"`
 
 	Psp_TransactionId string `xml:"psp_TransactionId,omitempty"`
 
 	Psp_MerchantId string `xml:"psp_MerchantId,omitempty"`
 
 	Psp_MerchTxRef string `xml:"psp_MerchTxRef,omitempty"`
+
+	Psp_MerchOrderId string `xml:"psp_MerchOrderId,omitempty"`
 
 	Psp_MerchAdditionalRef string `xml:"psp_MerchAdditionalRef,omitempty"`
 
@@ -1504,6 +1484,12 @@ type RespuestaStruct_SplitPayOnLine_2p_Transactions struct {
 	Psp_NumPayments string `xml:"psp_NumPayments,omitempty"`
 
 	Psp_PaymentAmount string `xml:"psp_PaymentAmount,omitempty"`
+
+	Psp_Recurrent string `xml:"psp_Recurrent,omitempty"`
+
+	Psp_Currency string `xml:"psp_Currency,omitempty"`
+
+	Psp_Country string `xml:"psp_Country,omitempty"`
 
 	Psp_Product string `xml:"psp_Product,omitempty"`
 
@@ -1519,6 +1505,12 @@ type RespuestaStruct_SplitPayOnLine_2p_Transactions struct {
 
 	Psp_SequenceNumber string `xml:"psp_SequenceNumber,omitempty"`
 
+	Psp_CustomerMail string `xml:"psp_CustomerMail,omitempty"`
+
+	Psp_CustomerId string `xml:"psp_CustomerId,omitempty"`
+
+	Psp_MerchantMail string `xml:"psp_MerchantMail,omitempty"`
+
 	Psp_ClTrnId string `xml:"psp_ClTrnId,omitempty"`
 
 	Psp_ClExternalMerchant string `xml:"psp_ClExternalMerchant,omitempty"`
@@ -1529,9 +1521,9 @@ type RespuestaStruct_SplitPayOnLine_2p_Transactions struct {
 
 	Psp_ClResponseMsg string `xml:"psp_ClResponseMsg,omitempty"`
 
-	Psp_Plan string `xml:"psp_Plan,omitempty"`
+	Psp_PosDateTime string `xml:"psp_PosDateTime,omitempty"`
 
-	Psp_FirstPaymentDeferral string `xml:"psp_FirstPaymentDeferral,omitempty"`
+	Psp_Plan string `xml:"psp_Plan,omitempty"`
 
 	Psp_PromotionCode string `xml:"psp_PromotionCode,omitempty"`
 
@@ -1583,13 +1575,17 @@ type RespuestaStruct_SplitPayOnLine_2p struct {
 }
 
 type RequerimientoStruct_SplitAuthorize_2p_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RequerimientoStruct_SplitAuthorize_2p_Transactions"`
+	//XMLName xml.Name `xml:"RequerimientoStruct_SplitAuthorize_2p_Transactions"`
 
 	Psp_MerchantId string `xml:"psp_MerchantId,omitempty"`
 
 	Psp_MerchTxRef string `xml:"psp_MerchTxRef,omitempty"`
 
 	Psp_MerchAdditionalRef string `xml:"psp_MerchAdditionalRef,omitempty"`
+
+	Psp_Amount string `xml:"psp_Amount,omitempty"`
+
+	Psp_NumPayments string `xml:"psp_NumPayments,omitempty"`
 
 	Psp_Product string `xml:"psp_Product,omitempty"`
 
@@ -1601,27 +1597,21 @@ type RequerimientoStruct_SplitAuthorize_2p_Transactions struct {
 
 	Psp_CardHolderName string `xml:"psp_CardHolderName,omitempty"`
 
-	Psp_Amount string `xml:"psp_Amount,omitempty"`
-
-	Psp_NumPayments string `xml:"psp_NumPayments,omitempty"`
+	Psp_SoftDescriptor string `xml:"psp_SoftDescriptor,omitempty"`
 
 	Psp_Plan string `xml:"psp_Plan,omitempty"`
-
-	Psp_FirstPaymentDeferral string `xml:"psp_FirstPaymentDeferral,omitempty"`
 
 	Psp_PromotionCode string `xml:"psp_PromotionCode,omitempty"`
 
 	Psp_PresetCardIIN string `xml:"psp_PresetCardIIN,omitempty"`
 
-	Psp_SoftDescriptor string `xml:"psp_SoftDescriptor,omitempty"`
+	Psp_VaultReference *VaultReference2pStruct
 
 	Psp_AmountAdditionalDetails *AmountAdditionalDetailsRequestStruct
 
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
 
 	Psp_BillingDetails *BillingDetailsStruct
-
-	Psp_VaultReference *VaultReference2pStruct
 }
 
 type ArrayOf_RequerimientoStruct_SplitAuthorize_2p_Transactions struct {
@@ -1638,7 +1628,6 @@ type ServiceStruct_SplitAuthorize_2p struct {
 }
 
 type RequerimientoStruct_SplitAuthorize_2p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_SplitAuthorize_2p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -1687,6 +1676,8 @@ type RequerimientoStruct_SplitAuthorize_2p struct {
 
 	Psp_SecureHash string `xml:"psp_SecureHash,omitempty"`
 
+	Psp_VaultReference *VaultReference2pStruct
+
 	Psp_MerchantAdditionalDetails *MerchantAdditionalDetailsStruct
 
 	Psp_CustomerAdditionalDetails *CustomerAdditionalDetailsStruct
@@ -1732,6 +1723,12 @@ type RespuestaStruct_SplitAuthorize_2p struct {
 	Psp_Transactions *ArrayOf_RespuestaStruct_SplitPayOnLine_2p_Transactions
 }
 
+type VaultReference3pStruct struct {
+	XMLName xml.Name `xml:"VaultReference3pStruct"`
+
+	CustomerId string `xml:"CustomerId,omitempty"`
+}
+
 type ServiceStruct_PayOnLine_3p struct {
 	XMLName xml.Name `xml:"PayOnLine_3p"`
 
@@ -1739,7 +1736,6 @@ type ServiceStruct_PayOnLine_3p struct {
 }
 
 type RequerimientoStruct_PayOnLine_3p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_PayOnLine_3p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2119,7 +2115,6 @@ type ServiceStruct_Authorize_3p struct {
 }
 
 type RequerimientoStruct_Authorize_3p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_Authorize_3p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2274,7 +2269,6 @@ type RespuestaStruct_Authorize_3p struct {
 }
 
 type RequerimientoStruct_SplitAuthorize_3p_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RequerimientoStruct_SplitAuthorize_3p_Transactions"`
 	Xsi_Type string `xml:"xsi:type,attr"`
 
 	Psp_MerchantId string `xml:"psp_MerchantId,omitempty"`
@@ -2314,7 +2308,6 @@ type ServiceStruct_SplitAuthorize_3p struct {
 }
 
 type RequerimientoStruct_SplitAuthorize_3p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_SplitAuthorize_3p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2405,7 +2398,6 @@ type RequerimientoStruct_SplitAuthorize_3p struct {
 }
 
 type RespuestaStruct_SplitAuthorize_3p_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RespuestaStruct_SplitAuthorize_3p_Transactions"`
 
 	Psp_MerchantId string `xml:"psp_MerchantId,omitempty"`
 
@@ -2473,6 +2465,8 @@ type RespuestaStruct_SplitAuthorize_3p struct {
 
 	Psp_Country string `xml:"psp_Country,omitempty"`
 
+	Psp_UseMultipleProducts string `xml:"psp_UseMultipleProducts,omitempty"`
+
 	Psp_Product string `xml:"psp_Product,omitempty"`
 
 	Psp_CustomerMail string `xml:"psp_CustomerMail,omitempty"`
@@ -2487,8 +2481,6 @@ type RespuestaStruct_SplitAuthorize_3p struct {
 
 	Psp_PresetCardIIN string `xml:"psp_PresetCardIIN,omitempty"`
 
-	Psp_UseMultipleProducts string `xml:"psp_UseMultipleProducts,omitempty"`
-
 	Psp_Transactions *ArrayOf_RespuestaStruct_SplitAuthorize_3p_Transactions //`xml:"psp_Transactions,omitempty"`
 }
 
@@ -2499,7 +2491,6 @@ type ServiceStruct_BankPayment_3p struct {
 }
 
 type RequerimientoStruct_BankPayment_3p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_BankPayment_3p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2652,7 +2643,6 @@ type ServiceStruct_CashPayment_3p struct {
 }
 
 type RequerimientoStruct_CashPayment_3p struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_CashPayment_3p"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2785,7 +2775,6 @@ type ServiceStruct_Capture struct {
 }
 
 type RequerimientoStruct_Capture struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_Capture"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2876,7 +2865,6 @@ type ServiceStruct_Refund struct {
 }
 
 type RequerimientoStruct_Refund struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_Refund"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -2969,7 +2957,6 @@ type ServiceStruct_GetInstallmentsOptions struct {
 }
 
 type RequerimientoStruct_GetInstallmentsOptions struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_GetInstallmentsOptions"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3063,7 +3050,6 @@ type ServiceStruct_CreatePaymentMethodToken struct {
 }
 
 type RequerimientoStruct_CreatePaymentMethodToken struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_CreatePaymentMethodToken"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3144,7 +3130,6 @@ type ServiceStruct_RetrievePaymentMethodToken struct {
 }
 
 type RequerimientoStruct_RetrievePaymentMethodToken struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_RetrievePaymentMethodToken"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3197,7 +3182,6 @@ type ServiceStruct_RecachePaymentMethodToken struct {
 }
 
 type RequerimientoStruct_RecachePaymentMethodToken struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_RecachePaymentMethodToken"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3256,7 +3240,6 @@ type ServiceStruct_CreateClientSession struct {
 }
 
 type RequerimientoStruct_CreateClientSession struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_CreateClientSession"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3315,7 +3298,6 @@ type ServiceStruct_CreatePaymentMethod struct {
 }
 
 type RequerimientoStruct_CreatePaymentMethod struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_CreatePaymentMethod"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3386,7 +3368,7 @@ type ServiceStruct_CreatePaymentMethodFromPayment struct {
 }
 
 type RequerimientoStruct_CreatePaymentMethodFromPayment struct {
-	XMLName xml.Name `xml:"RequerimientoStruct_CreatePaymentMethodFromPayment"`
+	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
 
@@ -3436,7 +3418,6 @@ type ServiceStruct_RetrievePaymentMethod struct {
 }
 
 type RequerimientoStruct_RetrievePaymentMethod struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_RetrievePaymentMethod"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3489,7 +3470,6 @@ type ServiceStruct_UpdatePaymentMethod struct {
 }
 
 type RequerimientoStruct_UpdatePaymentMethod struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_UpdatePaymentMethod"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3542,7 +3522,6 @@ type ServiceStruct_DeletePaymentMethod struct {
 }
 
 type RequerimientoStruct_DeletePaymentMethod struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_DeletePaymentMethod"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3587,7 +3566,6 @@ type ServiceStruct_CreateCustomer struct {
 }
 
 type RequerimientoStruct_CreateCustomer struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_CreateCustomer"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3686,7 +3664,6 @@ type ServiceStruct_RetrieveCustomer struct {
 }
 
 type RequerimientoStruct_RetrieveCustomer struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_RetrieveCustomer"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3745,7 +3722,6 @@ type ServiceStruct_UpdateCustomer struct {
 }
 
 type RequerimientoStruct_UpdateCustomer struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_UpdateCustomer"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3820,7 +3796,6 @@ type ServiceStruct_DeleteCustomer struct {
 }
 
 type RequerimientoStruct_DeleteCustomer struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_DeleteCustomer"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -3879,7 +3854,6 @@ type ServiceStruct_SimpleQueryTx struct {
 }
 
 type RequerimientoStruct_SimpleQueryTx struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_SimpleQueryTx"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4048,7 +4022,6 @@ type ServiceStruct_QueryCardNumber struct {
 }
 
 type RequerimientoStruct_QueryCardNumber struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_QueryCardNumber"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4097,7 +4070,6 @@ type ServiceStruct_QueryCardDetails struct {
 }
 
 type RequerimientoStruct_QueryCardDetails struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_QueryCardDetails"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4146,7 +4118,6 @@ type ServiceStruct_QueryTxs struct {
 }
 
 type RequerimientoStruct_QueryTxs struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_QueryTxs"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4163,8 +4134,6 @@ type RequerimientoStruct_QueryTxs struct {
 }
 
 type RespuestaStruct_QueryTxs_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws RespuestaStruct_QueryTxs_Transactions"`
-
 	Psp_ResponseCod string `xml:"psp_ResponseCod,omitempty"`
 
 	Psp_ResponseMsg string `xml:"psp_ResponseMsg,omitempty"`
@@ -4283,7 +4252,6 @@ type RespuestaStruct_QueryTxs_Transactions struct {
 }
 
 type ArrayOf_RespuestaStruct_QueryTxs_Transactions struct {
-	//XMLName xml.Name `xml:"https://services2.nps.com.ar/ws ArrayOf_RespuestaStruct_QueryTxs_Transactions"`
 	Items []*RespuestaStruct_QueryTxs_Transactions `xml:"item,omitempty"`
 }
 
@@ -4320,7 +4288,6 @@ type ServiceStruct_GetIINDetails struct {
 }
 
 type RequerimientoStruct_GetIINDetails struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_GetIINDetails"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4369,7 +4336,6 @@ type ServiceStruct_ChangeSecretKey struct {
 }
 
 type RequerimientoStruct_ChangeSecretKey struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_ChangeSecretKey"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4410,7 +4376,6 @@ type ServiceStruct_FraudScreening struct {
 }
 
 type RequerimientoStruct_FraudScreening struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_FraudScreening"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4523,7 +4488,6 @@ type ServiceStruct_NotifyFraudScreeningReview struct {
 }
 
 type RequerimientoStruct_NotifyFraudScreeningReview struct {
-	//XMLName xml.Name `xml:"RequerimientoStruct_NotifyFraudScreeningReview"`
 	XMLName xml.Name `xml:"Requerimiento"`
 
 	Psp_Version string `xml:"psp_Version,omitempty"`
@@ -4566,572 +4530,4 @@ type RespuestaStruct_NotifyFraudScreeningReview struct {
 
 	Psp_PosDateTime string `xml:"psp_PosDateTime,omitempty"`
 }
-/************************************************************************************
-func (service *PaymentServicePlatformPortType) PayOnLine_2p(request *RequerimientoStruct_PayOnLine_2p) (*RespuestaStruct_PayOnLine_2p, error) {
 
-	response := new(ServiceRespuestaStruct_PayOnLine_2p)
-
-	servicioPayOnLine_2p := new(ServiceStruct_PayOnLine_2p)
-	servicioPayOnLine_2p.PSP_RequerimientoStruct_PayOnLine_2p = request
-
-	err := service.client.Call(CONSTANTS.PAY_ONLINE_2P, servicioPayOnLine_2p, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_PayOnLine_2p, nil
-}
-/************************************************************************************
-func (service *PaymentServicePlatformPortType) Authorize_2p(request *RequerimientoStruct_Authorize_2p) (*RespuestaStruct_Authorize_2p, error) {
-	response := new(ServiceRespuestaStruct_Authorize_2p)
-
-	servicioAuthorize_2p := new(ServiceStruct_Authorize_2p)
-	servicioAuthorize_2p.PSP_RequerimientoStruct_Authorize_2p = request
-
-	err := service.client.Call(CONSTANTS.AUTHORIZE_2P, servicioAuthorize_2p, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_Authorize_2p, nil
-}
-
-func (service *PaymentServicePlatformPortType) BankPayment_2p(request *RequerimientoStruct_BankPayment_2p) (*RespuestaStruct_BankPayment_2p, error) {
-	response := new(ServiceRespuestaStruct_BankPayment_2p)
-
-	servicioBankPayment_2p := new(ServiceStruct_BankPayment_2p)
-	servicioBankPayment_2p.PSP_RequerimientoStruct_BankPayment_2p = request
-
-	err := service.client.Call(CONSTANTS.BANK_PAYMENT_2P, servicioBankPayment_2p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_BankPayment_2p, nil
-}
-
-func (service *PaymentServicePlatformPortType) SplitPayOnLine_2p(request *RequerimientoStruct_SplitPayOnLine_2p) (*RespuestaStruct_SplitPayOnLine_2p, error) {
-	response := new(ServiceRespuestaStruct_SplitPayOnLine_2p)
-
-	servicioSplitPayOnLine_2p := new(ServiceStruct_SplitPayOnLine_2p)
-	servicioSplitPayOnLine_2p.PSP_RequerimientoStruct_SplitPayOnLine_2p = request
-
-	err := service.client.Call(CONSTANTS.SPLIT_PAY_ONLINE_2P, servicioSplitPayOnLine_2p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_SplitPayOnLine_2p, nil
-}
-
-func (service *PaymentServicePlatformPortType) SplitAuthorize_2p(request *RequerimientoStruct_SplitAuthorize_2p) (*RespuestaStruct_SplitAuthorize_2p, error) {
-	response := new(ServiceRespuestaStruct_SplitAuthorize_2p)
-
-	servicioSplitAuthorize_2p := new(ServiceStruct_SplitAuthorize_2p)
-	servicioSplitAuthorize_2p.PSP_RequerimientoStruct_SplitAuthorize_2p = request
-
-	err := service.client.Call(CONSTANTS.SPLIT_AUTHORIZE_2P, servicioSplitAuthorize_2p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_SplitAuthorize_2p, nil
-}
-
-func (service *PaymentServicePlatformPortType) PayOnLine_3p(request *RequerimientoStruct_PayOnLine_3p) (*RespuestaStruct_PayOnLine_3p, error) {
-	response := new(ServiceRespuestaStruct_PayOnLine_3p)
-
-	servicioPayOnLine_3p := new(ServiceStruct_PayOnLine_3p)
-	servicioPayOnLine_3p.PSP_RequerimientoStruct_PayOnLine_3p = request
-
-	err := service.client.Call(CONSTANTS.PAY_ONLINE_3P, servicioPayOnLine_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_PayOnLine_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) SplitPayOnLine_3p(request *RequerimientoStruct_SplitPayOnLine_3p) (*RespuestaStruct_SplitPayOnLine_3p, error) {
-	response := new(ServiceRespuestaStruct_SplitPayOnLine_3p)
-
-	servicioSplitPayOnLine_3p := new(ServiceStruct_SplitPayOnLine_3p)
-	servicioSplitPayOnLine_3p.PSP_RequerimientoStruct_SplitPayOnLine_3p = request
-
-	err := service.client.Call(CONSTANTS.SPLIT_PAY_ONLINE_3P, servicioSplitPayOnLine_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_SplitPayOnLine_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) Authorize_3p(request *RequerimientoStruct_Authorize_3p) (*RespuestaStruct_Authorize_3p, error) {
-	response := new(ServiceRespuestaStruct_Authorize_3p)
-
-	servicioAuthorize_3p := new(ServiceStruct_Authorize_3p)
-	servicioAuthorize_3p.PSP_RequerimientoStruct_Authorize_3p = request
-
-	err := service.client.Call(CONSTANTS.AUTHORIZE_3P, servicioAuthorize_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_Authorize_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) SplitAuthorize_3p(request *RequerimientoStruct_SplitAuthorize_3p) (*RespuestaStruct_SplitAuthorize_3p, error) {
-	response := new(ServiceRespuestaStruct_SplitAuthorize_3p)
-
-	serviceSplitAuthorize_3p := new(ServiceStruct_SplitAuthorize_3p)
-	serviceSplitAuthorize_3p.PSP_RequerimientoStruct_SplitAuthorize_3p = request
-
-	err := service.client.Call(CONSTANTS.SPLIT_AUTHORIZE_3P, serviceSplitAuthorize_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_SplitAuthorize_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) BankPayment_3p(request *RequerimientoStruct_BankPayment_3p) (*RespuestaStruct_BankPayment_3p, error) {
-	response := new(ServiceRespuestaStruct_BankPayment_3p)
-
-	servicioBankPayment_3p := new(ServiceStruct_BankPayment_3p)
-	servicioBankPayment_3p.PSP_RequerimientoStruct_BankPayment_3p = request
-
-	err := service.client.Call(CONSTANTS.BANK_PAYMENT_3P, servicioBankPayment_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_BankPayment_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) CashPayment_3p(request *RequerimientoStruct_CashPayment_3p) (*RespuestaStruct_CashPayment_3p, error) {
-	response := new(ServiceRespuestaStruct_CashPayment_3p)
-
-	servicioCashPayment_3p := new(ServiceStruct_CashPayment_3p)
-	servicioCashPayment_3p.PSP_RequerimientoStruct_CashPayment_3p = request
-
-	err := service.client.Call(CONSTANTS.CASH_PAYMENT_3P, servicioCashPayment_3p, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CashPayment_3p, nil
-}
-
-func (service *PaymentServicePlatformPortType) Capture(request *RequerimientoStruct_Capture) (*RespuestaStruct_Capture, error) {
-	response := new(ServiceRespuestaStruct_Capture)
-
-	servicioCapture := new(ServiceStruct_Capture)
-	servicioCapture.PSP_RequerimientoStruct_Capture = request
-
-	err := service.client.Call(CONSTANTS.CAPTURE, servicioCapture, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_Capture, nil
-}
-
-func (service *PaymentServicePlatformPortType) Refund(request *RequerimientoStruct_Refund) (*RespuestaStruct_Refund, error) {
-	response := new(ServiceRespuestaStruct_Refund)
-
-	servicioRefund := new(ServiceStruct_Refund)
-	servicioRefund.PSP_RequerimientoStruct_Refund = request
-
-	err := service.client.Call(CONSTANTS.REFUND, servicioRefund, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_Refund, nil
-}
-
-func (service *PaymentServicePlatformPortType) GetInstallmentsOptions(request *RequerimientoStruct_GetInstallmentsOptions) (*RespuestaStruct_GetInstallmentsOptions, error) {
-	response := new(ServiceRespuestaStruct_GetInstallmentsOptions)
-
-	servicioGetInstallmentsOptions := new(ServiceStruct_GetInstallmentsOptions)
-	servicioGetInstallmentsOptions.PSP_RequerimientoStruct_GetInstallmentsOptions = request
-
-	err := service.client.Call(CONSTANTS.GET_INSTALLMENTS_OPTIONS, servicioGetInstallmentsOptions, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_GetInstallmentsOptions, nil
-}
-
-func (service *PaymentServicePlatformPortType) CreatePaymentMethodToken(request *RequerimientoStruct_CreatePaymentMethodToken) (*RespuestaStruct_CreatePaymentMethodToken, error) {
-	response := new(ServiceRespuestaStruct_CreatePaymentMethodToken)
-
-	if request.Psp_CardInputDetails != nil {
-		request.Psp_CardInputDetails.XMLName = xml.Name{"", "psp_CardInputDetails"}
-	}
-	if request.Psp_Address != nil {
-		request.Psp_Address.XMLName = xml.Name{"", "psp_Address"}
-	}
-	if request.Psp_Person != nil {
-		request.Psp_Person.XMLName = xml.Name{"", "psp_Person"}
-	}
-
-	servicioCreatePaymentMethodToken := new(ServiceStruct_CreatePaymentMethodToken)
-	servicioCreatePaymentMethodToken.PSP_RequerimientoStruct_CreatePaymentMethodToken = request
-
-	err := service.client.Call(CONSTANTS.CREATE_PAYMENT_METHOD_TOKEN, servicioCreatePaymentMethodToken, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CreatePaymentMethodToken, nil
-}
-
-func (service *PaymentServicePlatformPortType) RetrievePaymentMethodToken(request *RequerimientoStruct_RetrievePaymentMethodToken) (*RespuestaStruct_RetrievePaymentMethodToken, error) {
-	response := new(ServiceRespuestaStruct_RetrievePaymentMethodToken)
-
-	servicioRetrievePaymentMethodToken := new(ServiceStruct_RetrievePaymentMethodToken)
-	servicioRetrievePaymentMethodToken.PSP_RequerimientoStruct_RetrievePaymentMethodToken = request
-
-	err := service.client.Call(CONSTANTS.RETRIEVE_PAYMENT_METHOD_TOKEN, servicioRetrievePaymentMethodToken, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_RetrievePaymentMethodToken, nil
-}
-
-func (service *PaymentServicePlatformPortType) RecachePaymentMethodToken(request *RequerimientoStruct_RecachePaymentMethodToken) (*RespuestaStruct_RecachePaymentMethodToken, error) {
-	response := new(ServiceRespuestaStruct_RecachePaymentMethodToken)
-
-	if request.Psp_Address != nil {
-		request.Psp_Address.XMLName = xml.Name{"", "psp_Address"}
-	}
-	if request.Psp_Person != nil {
-		request.Psp_Person.XMLName = xml.Name{"", "psp_Person"}
-	}
-
-	servicioRecachePaymentMethodToken := new(ServiceStruct_RecachePaymentMethodToken)
-	servicioRecachePaymentMethodToken.PSP_RequerimientoStruct_RecachePaymentMethodToken = request
-
-	err := service.client.Call(CONSTANTS.RECACHE_PAYMENT_METHOD_TOKEN, servicioRecachePaymentMethodToken, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_RecachePaymentMethodToken, nil
-}
-
-func (service *PaymentServicePlatformPortType) CreateClientSession(request *RequerimientoStruct_CreateClientSession) (*RespuestaStruct_CreateClientSession, error) {
-	response := new(ServiceRespuestaStruct_CreateClientSession)
-
-	servicioCreateClientSession := new(ServiceStruct_CreateClientSession)
-	servicioCreateClientSession.PSP_RequerimientoStruct_CreateClientSession = request
-
-	err := service.client.Call(CONSTANTS.CREATE_CLIENT_SESSION, servicioCreateClientSession, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CreateClientSession, nil
-}
-
-func (service *PaymentServicePlatformPortType) CreatePaymentMethod(request *RequerimientoStruct_CreatePaymentMethod) (*RespuestaStruct_CreatePaymentMethod, error) {
-	response := new(ServiceRespuestaStruct_CreatePaymentMethod)
-
-	servicioCreatePaymentMethod := new(ServiceStruct_CreatePaymentMethod)
-	servicioCreatePaymentMethod.PSP_RequerimientoStruct_CreatePaymentMethod = request
-
-	err := service.client.Call(CONSTANTS.CREATE_PAYMENT_METHOD, servicioCreatePaymentMethod, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CreatePaymentMethod, nil
-}
-
-func (service *PaymentServicePlatformPortType) CreatePaymentMethodFromPayment(request *RequerimientoStruct_CreatePaymentMethodFromPayment) (*RespuestaStruct_CreatePaymentMethodFromPayment, error) {
-	response := new(ServiceRespuestaStruct_CreatePaymentMethodFromPayment)
-
-	servicioCreatePaymentMethodFromPayment := new(ServiceStruct_CreatePaymentMethodFromPayment)
-	servicioCreatePaymentMethodFromPayment.PSP_RequerimientoStruct_CreatePaymentMethodFromPayment = request
-
-	err := service.client.Call(CONSTANTS.CREATE_PAYMENT_METHOD_FROM_PAYMENT, servicioCreatePaymentMethodFromPayment, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CreatePaymentMethodFromPayment, nil
-}
-
-func (service *PaymentServicePlatformPortType) RetrievePaymentMethod(request *RequerimientoStruct_RetrievePaymentMethod) (*RespuestaStruct_RetrievePaymentMethod, error) {
-	response := new(ServiceRespuestaStruct_RetrievePaymentMethod)
-
-	servicioRetrievePaymentMethod := new(ServiceStruct_RetrievePaymentMethod)
-	servicioRetrievePaymentMethod.PSP_RequerimientoStruct_RetrievePaymentMethod = request
-
-	err := service.client.Call(CONSTANTS.RETRIEVE_PAYMENT_METHOD, servicioRetrievePaymentMethod, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_RetrievePaymentMethod, nil
-}
-
-func (service *PaymentServicePlatformPortType) UpdatePaymentMethod(request *RequerimientoStruct_UpdatePaymentMethod) (*RespuestaStruct_UpdatePaymentMethod, error) {
-	response := new(ServiceRespuestaStruct_UpdatePaymentMethod)
-
-	servicioUpdatePaymentMethod := new(ServiceStruct_UpdatePaymentMethod)
-	servicioUpdatePaymentMethod.PSP_RequerimientoStruct_UpdatePaymentMethod = request
-
-	err := service.client.Call(CONSTANTS.UPDATE_PAYMENT_METHOD, servicioUpdatePaymentMethod, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_UpdatePaymentMethod, nil
-}
-
-func (service *PaymentServicePlatformPortType) DeletePaymentMethod(request *RequerimientoStruct_DeletePaymentMethod) (*RespuestaStruct_DeletePaymentMethod, error) {
-	response := new(ServiceRespuestaStruct_DeletePaymentMethod)
-
-	servicioDeletePaymentMethod := new(ServiceStruct_DeletePaymentMethod)
-	servicioDeletePaymentMethod.PSP_RequerimientoStruct_DeletePaymentMethod = request
-
-	err := service.client.Call(CONSTANTS.DELETE_PAYMENT_METHOD, servicioDeletePaymentMethod, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_DeletePaymentMethod, nil
-}
-
-func (service *PaymentServicePlatformPortType) CreateCustomer(request *RequerimientoStruct_CreateCustomer) (*RespuestaStruct_CreateCustomer, error) {
-	response := new(ServiceRespuestaStruct_CreateCustomer)
-
-	if request.Psp_Address != nil {
-		request.Psp_Address.XMLName = xml.Name{"", "psp_Address"}
-	}
-	if request.Psp_Person != nil {
-		request.Psp_Person.XMLName = xml.Name{"", "psp_Person"}
-	}
-
-	if request.Psp_PaymentMethod != nil && request.Psp_PaymentMethod.Person != nil {
-		request.Psp_PaymentMethod.Person.XMLName = xml.Name{"", "Person"}
-	}
-
-	if request.Psp_PaymentMethod != nil && request.Psp_PaymentMethod.Address != nil {
-		request.Psp_PaymentMethod.Address.XMLName = xml.Name{"", "Address"}
-	}
-
-	servicioCreateCustomer := new(ServiceStruct_CreateCustomer)
-	servicioCreateCustomer.PSP_RequerimientoStruct_CreateCustomer = request
-
-	err := service.client.Call(CONSTANTS.CREATE_CUSTOMER, servicioCreateCustomer, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_CreateCustomer, nil
-}
-
-func (service *PaymentServicePlatformPortType) RetrieveCustomer(request *RequerimientoStruct_RetrieveCustomer) (*RespuestaStruct_RetrieveCustomer, error) {
-	response := new(ServiceRespuestaStruct_RetrieveCustomer)
-
-	servicioRetrieveCustomer := new(ServiceStruct_RetrieveCustomer)
-	servicioRetrieveCustomer.PSP_RequerimientoStruct_RetrieveCustomer = request
-
-	err := service.client.Call(CONSTANTS.RETRIEVE_CUSTOMER, servicioRetrieveCustomer, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_RetrieveCustomer, nil
-}
-
-func (service *PaymentServicePlatformPortType) UpdateCustomer(request *RequerimientoStruct_UpdateCustomer) (*RespuestaStruct_UpdateCustomer, error) {
-	response := new(ServiceRespuestaStruct_UpdateCustomer)
-
-	if request.Psp_Address != nil {
-		request.Psp_Address.XMLName = xml.Name{"", "psp_Address"}
-	}
-	if request.Psp_Person != nil {
-		request.Psp_Person.XMLName = xml.Name{"", "psp_Person"}
-	}
-	if request.Psp_PaymentMethod != nil && request.Psp_PaymentMethod.Person != nil {
-		request.Psp_PaymentMethod.Person.XMLName = xml.Name{"", "Person"}
-	}
-
-	if request.Psp_PaymentMethod != nil && request.Psp_PaymentMethod.Address != nil {
-		request.Psp_PaymentMethod.Address.XMLName = xml.Name{"", "Address"}
-	}
-
-	servicioUpdateCustomer := new(ServiceStruct_UpdateCustomer)
-	servicioUpdateCustomer.PSP_RequerimientoStruct_UpdateCustomer = request
-
-	err := service.client.Call(CONSTANTS.UPDATE_CUSTOMER, servicioUpdateCustomer, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_UpdateCustomer, nil
-}
-
-func (service *PaymentServicePlatformPortType) DeleteCustomer(request *RequerimientoStruct_DeleteCustomer) (*RespuestaStruct_DeleteCustomer, error) {
-	response := new(ServiceRespuestaStruct_DeleteCustomer)
-
-	servicioDeleteCustomer := new(ServiceStruct_DeleteCustomer)
-	servicioDeleteCustomer.PSP_RequerimientoStruct_DeleteCustomer = request
-
-	err := service.client.Call(CONSTANTS.DELETE_CUSTOMER, servicioDeleteCustomer, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_DeleteCustomer, nil
-}
-
-func (service *PaymentServicePlatformPortType) SimpleQueryTx(request *RequerimientoStruct_SimpleQueryTx) (*RespuestaStruct_SimpleQueryTx, error) {
-	response := new(ServiceRespuestaStruct_SimpleQueryTx)
-
-	servicioSimpleQueryTx := new(ServiceStruct_SimpleQueryTx)
-	servicioSimpleQueryTx.PSP_RequerimientoStruct_SimpleQueryTx = request
-
-	err := service.client.Call(CONSTANTS.SIMPLE_QUERY_TX, servicioSimpleQueryTx, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_SimpleQueryTx, nil
-}
-
-func (service *PaymentServicePlatformPortType) QueryCardNumber(request *RequerimientoStruct_QueryCardNumber) (*RespuestaStruct_QueryCardNumber, error) {
-	response := new(ServiceRespuestaStruct_QueryCardNumber)
-
-	servicioQueryCardNumber := new(ServiceStruct_QueryCardNumber)
-	servicioQueryCardNumber.PSP_RequerimientoStruct_QueryCardNumber = request
-
-	err := service.client.Call(CONSTANTS.QUERY_CARD_NUMBER, servicioQueryCardNumber, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_QueryCardNumber, nil
-}
-
-func (service *PaymentServicePlatformPortType) QueryCardDetails(request *RequerimientoStruct_QueryCardDetails) (*RespuestaStruct_QueryCardDetails, error) {
-	response := new(ServiceRespuestaStruct_QueryCardDetails)
-
-	servicioQueryCardDetails := new(ServiceStruct_QueryCardDetails)
-	servicioQueryCardDetails.PSP_RequerimientoStruct_QueryCardDetails = request
-
-	err := service.client.Call(CONSTANTS.QUERY_CARD_DETAILS, servicioQueryCardDetails, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_QueryCardDetails, nil
-}
-
-func (service *PaymentServicePlatformPortType) QueryTxs(request *RequerimientoStruct_QueryTxs) (*RespuestaStruct_QueryTxs, error) {
-	response := new(ServiceRespuestaStruct_QueryTxs)
-
-	servicioQueryTxs := new(ServiceStruct_QueryTxs)
-	servicioQueryTxs.PSP_RequerimientoStruct_QueryTxs = request
-
-	err := service.client.Call(CONSTANTS.QUERY_TXS, servicioQueryTxs, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_QueryTxs, nil
-}
-
-func (service *PaymentServicePlatformPortType) GetIINDetails(request *RequerimientoStruct_GetIINDetails) (*RespuestaStruct_GetIINDetails, error) {
-	response := new(ServiceRespuestaStruct_GetIINDetails)
-
-	servicioGetIINDetails := new(ServiceStruct_GetIINDetails)
-	servicioGetIINDetails.PSP_RequerimientoStruct_GetIINDetails = request
-
-	err := service.client.Call(CONSTANTS.GET_IIN_DETAILS, servicioGetIINDetails, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_GetIINDetails, nil
-}
-
-func (service *PaymentServicePlatformPortType) ChangeSecretKey(request *RequerimientoStruct_ChangeSecretKey) (*RespuestaStruct_ChangeSecretKey, error) {
-	response := new(ServiceRespuestaStruct_ChangeSecretKey)
-
-	servicioChangeSecretKey := new(ServiceStruct_ChangeSecretKey)
-	servicioChangeSecretKey.PSP_RequerimientoStruct_ChangeSecretKey = request
-
-	err := service.client.Call(CONSTANTS.CHANGE_SECRET_KEY, servicioChangeSecretKey, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_ChangeSecretKey, nil
-}
-
-func (service *PaymentServicePlatformPortType) FraudScreening(request *RequerimientoStruct_FraudScreening) (*RespuestaStruct_FraudScreening, error) {
-	response := new(ServiceRespuestaStruct_FraudScreening)
-
-	servicioFraudScreening := new(ServiceStruct_FraudScreening)
-	servicioFraudScreening.PSP_RequerimientoStruct_FraudScreening = request
-
-	err := service.client.Call(CONSTANTS.FRAUD_SCREENING, servicioFraudScreening, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_FraudScreening, nil
-}
-
-func (service *PaymentServicePlatformPortType) NotifyFraudScreeningReview(request *RequerimientoStruct_NotifyFraudScreeningReview) (*RespuestaStruct_NotifyFraudScreeningReview, error) {
-	response := new(ServiceRespuestaStruct_NotifyFraudScreeningReview)
-
-	servicioNotifyFraudScreeningReview := new(ServiceStruct_NotifyFraudScreeningReview)
-	servicioNotifyFraudScreeningReview.PSP_RequerimientoStruct_NotifyFraudScreeningReview = request
-
-	err := service.client.Call(CONSTANTS.NOTIFY_FRAUD_SCREENING_REVIEW, servicioNotifyFraudScreeningReview, response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response.PSP_RespuestaStruct_NotifyFraudScreeningReview, nil
-}
-/************************************************************************************/
