@@ -294,6 +294,7 @@ All exceptions than can occur will be detailed inside of the response provided b
 
 ##  Advanced configurations
 
+### Logging
 Nps SDK allows you to log what’s happening with you request inside of our SDK, it logs by default to stout.
 The SDK uses the custom logger that you use for your project.
 
@@ -332,6 +333,8 @@ func main() {
 }
 ```
 
+### LogLevel
+
 The "INFO" level will write concise information of the request and will mask sensitive data of the request. 
 The "DEBUG" level will write information about the request to let developers debug it in a more detailed way.
 
@@ -358,6 +361,8 @@ func main() {
 }
 ```
 
+### Sanitize
+
 Sanitize allows the SDK to truncate to a fixed size some fields that could make request fail, like extremely long name.
 
 ```go
@@ -381,6 +386,9 @@ func main() {
 	})
 }
 ```
+
+## Timeout
+
 you can change the timeout of the request.
 
 ExecutionTimeout(Default=60 seconds): you can change the execution timeout of the request.
@@ -410,6 +418,8 @@ func main() {
 }
 
 ```
+
+### Proxy
 
 Proxy configuration
 
