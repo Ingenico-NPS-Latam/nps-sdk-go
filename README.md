@@ -419,9 +419,7 @@ func main() {
 
 ```
 
-### Proxy
-
-Proxy configuration
+### Proxy configuration
 
 ```go
 package main
