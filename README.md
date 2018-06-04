@@ -56,13 +56,13 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 	Person := npsSdk.NewPersonStruct()
 
 	fName := reflect.ValueOf(Person).Elem().FieldByName("FirstName")
-	if fName.IsValid() { fName.SetString("Silvina") }
+	if fName.IsValid() { fName.SetString("John") }
 
 	lName := reflect.ValueOf(Person).Elem().FieldByName("LastName")
-	if lName.IsValid() { lName.SetString("Falconi") }
+	if lName.IsValid() { lName.SetString("Doe") }
 
 	phNumber1 := reflect.ValueOf(Person).Elem().FieldByName("PhoneNumber1")
-	if phNumber1.IsValid() { phNumber1.SetString("52520960") }
+	if phNumber1.IsValid() { phNumber1.SetString("+1 011 11111111") }
 
 	AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
 	tip := reflect.ValueOf(AmountAdditionalDetails).Elem().FieldByName("Tip")
@@ -73,10 +73,10 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Billing := npsSdk.NewBillingDetailsStruct()
 	Invoice := reflect.ValueOf(Billing).Elem().FieldByName("Invoice")
-	if Invoice.IsValid() { Invoice.SetString("100001234") }
+	if Invoice.IsValid() { Invoice.SetString("54877555") }
 
 	InvoiceAmount := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceAmount")
-	if InvoiceAmount.IsValid() { InvoiceAmount.SetString("990") }
+	if InvoiceAmount.IsValid() { InvoiceAmount.SetString("15050") }
 
 	InvoiceCurrency := reflect.ValueOf(Billing).Elem().FieldByName("InvoiceCurrency")
 	if InvoiceCurrency.IsValid() { InvoiceCurrency.SetString("032") }
@@ -86,10 +86,10 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	SellerAddress := npsSdk.NewAddressStruct()
 	City := reflect.ValueOf(SellerAddress).Elem().FieldByName("City")
-	if City.IsValid() { City.SetString("CABA") }
+	if City.IsValid() { City.SetString("Miami") }
 
 	Country := reflect.ValueOf(SellerAddress).Elem().FieldByName("Country")
-	if Country.IsValid() { Country.SetString("ARG") }
+	if Country.IsValid() { Country.SetString("USA") }
 
 	Street := reflect.ValueOf(SellerAddress).Elem().FieldByName("Street")
 	if Street.IsValid() { Street.SetString("SellerStreet") }
@@ -99,7 +99,7 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	SellerDetails := npsSdk.NewSellerDetailsStruct()
 	SellerDetailsName := reflect.ValueOf(SellerDetails).Elem().FieldByName("Name")
-	if SellerDetailsName.IsValid() { SellerDetailsName.SetString("Seller Name") }
+	if SellerDetailsName.IsValid() { SellerDetailsName.SetString("John Doe") }
 
 	SellerDetailsAddress := reflect.ValueOf(SellerDetails).Elem().FieldByName("Address")
 	if SellerDetailsAddress.IsValid() { SellerDetailsAddress.Set(reflect.ValueOf(SellerAddress)) }
@@ -113,7 +113,7 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
 	EmailAddress := reflect.ValueOf(CustomerAdditionalDetails).Elem().FieldByName("EmailAddress")
-	if EmailAddress.IsValid() { EmailAddress.SetString("mailAddr@mail.com.ar") }
+	if EmailAddress.IsValid() { EmailAddress.SetString("jdoe@email.com") }
 
 	OrderItems := npsSdk.NewArrayOf_OrderItemStruct()
 
@@ -155,13 +155,13 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
 	Psp_MerchTxRef := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchTxRef")
         t := time.Now()
- 	if Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString(t.Format("20060102150405")) }
+ 	if Psp_MerchTxRef.IsValid() { Psp_MerchTxRef.SetString(t.Format("ORDERX1466Xz-3")) }
 
 	Psp_MerchOrderId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_MerchOrderId")
-	if Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("ORDER56666")}
+	if Psp_MerchOrderId.IsValid() { Psp_MerchOrderId.SetString("ORDERX1466Xz")}
 
 	Psp_Amount := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_Amount")
-	if Psp_Amount.IsValid() { Psp_Amount.SetString("1000")}
+	if Psp_Amount.IsValid() { Psp_Amount.SetString("15050")}
 
 	Psp_NumPayments := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_NumPayments")
 	if Psp_NumPayments.IsValid() { Psp_NumPayments.SetString("1")}
@@ -176,13 +176,13 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 	if Psp_Product.IsValid() { Psp_Product.SetString("14")}
 
 	Psp_CustomerMail := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CustomerMail")
-	if Psp_CustomerMail.IsValid() { Psp_CustomerMail.SetString("yourmail@gmail")}
+	if Psp_CustomerMail.IsValid() { Psp_CustomerMail.SetString("Jdoe79@email.com")}
 
 	Psp_CardNumber := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardNumber")
 	if Psp_CardNumber.IsValid() { Psp_CardNumber.SetString("4507990000000010")}
 
 	Psp_CardExpDate := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardExpDate")
-	if Psp_CardExpDate.IsValid() { Psp_CardExpDate.SetString("1903")}
+	if Psp_CardExpDate.IsValid() { Psp_CardExpDate.SetString("1912")}
 
 	Psp_CardSecurityCode := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_CardSecurityCode")
 	if Psp_CardSecurityCode.IsValid() { Psp_CardSecurityCode.SetString("306")}
@@ -193,8 +193,8 @@ func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 	Psp_PosDateTime := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_PosDateTime")
 	if Psp_PosDateTime.IsValid() { Psp_PosDateTime.SetString("2016-12-01 12:00:00")}
 
-        Psp_UserId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_UserId")
-        if Psp_UserId.IsValid() { Psp_UserId.SetString("SFALCONI")} 
+    Psp_UserId := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_UserId")
+    if Psp_UserId.IsValid() { Psp_UserId.SetString("john_doe")} 
 
 	Psp_OrderDetails := reflect.ValueOf(payOnline2p).Elem().FieldByName("Psp_OrderDetails")
 	if Psp_OrderDetails.IsValid() {  Psp_OrderDetails.Set(reflect.ValueOf(OrderDetails)) }
