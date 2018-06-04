@@ -51,66 +51,62 @@ import (
 func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
 
   Person := npsSdk.NewPersonStruct()
-  Person.FirstName = "First Name"
-  Person.LastName = "Last Name"
-  Person.PhoneNumber1 = "52520960"
+  Person.FirstName = "John"
+  Person.LastName = "Doe"
+  Person.PhoneNumber1 = "+1 011 11111111"
   
   AmountAdditionalDetails := npsSdk.NewAmountAdditionalDetailsRequestStruct()
   AmountAdditionalDetails.Tip = "10"
   AmountAdditionalDetails.Discount = "5"
   
   Billing := npsSdk.NewBillingDetailsStruct()
-  Billing.Invoice = "100001234"
-  Billing.InvoiceAmount = "990"
+  Billing.Invoice = "54877555"
+  Billing.InvoiceAmount = "15050"
   Billing.InvoiceCurrency = "032"
   Billing.Person = Person
   
   SellerAddress := npsSdk.NewAddressStruct()
-  SellerAddress.City = "CABA"
-  SellerAddress.Country = "ARG"
+  SellerAddress.City = "Miami"
+  SellerAddress.Country = "USA"
   SellerAddress.Street = "SellerStreet"
-  SellerAddress.HouseNumber = "1234"
+  SellerAddress.HouseNumber = "1245"
 
   SellerDetails := npsSdk.NewSellerDetailsStruct()
-  SellerDetails.Name = "Seller Name"
+  SellerDetails.Name = "John Doe"
   SellerDetails.Address = SellerAddress
   
   MerchantAdditionalDetails := npsSdk.NewMerchantAdditionalDetailsStruct()
   MerchantAdditionalDetails.ShoppingCartInfo = "ShoppingCartInfo"
   MerchantAdditionalDetails.SellerDetails = SellerDetails
   CustomerAdditionalDetails := npsSdk.NewCustomerAdditionalDetailsStruct()
-  CustomerAdditionalDetails.EmailAddress = "mailAddr@mail.com.ar"
+  CustomerAdditionalDetails.EmailAddress = "jdoe@email.com"
   
   order1 := npsSdk.NewOrderItemStruct()
-  order1.Description = "producto 1"
-  order1.UnitPrice = "10"
-  order2 := npsSdk.NewOrderItemStruct()
-  order2.Description = "producto 2"
-  order2.UnitPrice = "20"
+  order1.Description = "Blue pencil"
+  order1.UnitPrice = "10050"
 
   OrderDetails := npsSdk.NewOrderDetailsStruct()
   OrderDetails.OrderItems = npsSdk.NewArrayOf_OrderItemStruct()
   OrderDetails.OrderItems.Items = make([]*npsSdk.OrderItemStruct, 0)
   OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order1)
-  OrderDetails.OrderItems.Items = append(OrderDetails.OrderItems.Items, order2)
 
   payOnline2p := npsSdk.NewRequerimientoStruct_PayOnLine_2p()
 
   payOnline2p.Psp_Version = "2.2"
   payOnline2p.Psp_MerchantId = "psp_test"
   payOnline2p.Psp_TxSource = "WEB"
-  payOnline2p.Psp_MerchTxRef = "ORDER56666-3"
-  payOnline2p.Psp_MerchOrderId = "ORDER56666"
-  payOnline2p.Psp_Amount = "1000"
+  payOnline2p.Psp_MerchTxRef = "ORDERX1466Xz-3"
+  payOnline2p.Psp_MerchOrderId = "ORDERX1466Xz"
+  payOnline2p.Psp_Amount = "15050"
   payOnline2p.Psp_NumPayments = "1"
   payOnline2p.Psp_Currency = "032"
   payOnline2p.Psp_Country = "ARG"
   payOnline2p.Psp_Product = "14"
-  payOnline2p.Psp_CustomerMail = "yourmail@gmail"
+  payOnline2p.Psp_CustomerMail = "jdoe@email.com"
   payOnline2p.Psp_CardNumber = "4507990000000010"
-  payOnline2p.Psp_CardExpDate = "1903"
+  payOnline2p.Psp_CardExpDate = "1912"
   payOnline2p.Psp_CardSecurityCode = "306"
-  payOnline2p.Psp_SoftDescriptor = "Sol Tropical E"
+  payOnline2p.Psp_SoftDescriptor = "Compra Art 15"
   payOnline2p.Psp_PosDateTime = "2016-12-01 12:00:00"
 
   payOnline2p.Psp_OrderDetails = OrderDetails
@@ -196,6 +192,8 @@ All exceptions than can occur will be detailed inside of the response provided b
 
 ##  Advanced configurations
 
+### Logging
+
 Nps SDK allows you to log what’s happening with you request inside of our SDK, it logs by default to stout.
 The SDK uses the custom logger that you use for your project.
 
@@ -234,6 +232,8 @@ func main() {
 }
 ```
 
+### Loglevel
+
 The "INFO" level will write concise information of the request and will mask sensitive data of the request. 
 The "DEBUG" level will write information about the request to let developers debug it in a more detailed way.
 
@@ -259,6 +259,8 @@ func main() {
 }
 ```
 
+### Sanitize
+
 Sanitize allows the SDK to truncate to a fixed size some fields that could make request fail, like extremely long name.
 
 ```go
@@ -280,7 +282,10 @@ func main() {
 	})
 }
 ```
-you can change the timeout of the request.
+
+### Timeout
+
+You can change the timeout of the request.
 
 ExecutionTimeout(Default=60 seconds): you can change the execution timeout of the request.
 
@@ -308,7 +313,7 @@ func main() {
 
 ```
 
-Proxy configuration
+### Proxy configuration
 
 ```go
 package main
