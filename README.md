@@ -306,8 +306,8 @@ func main() {
   err := npsSdk.Configure(map[string]interface{}{
 	  "environment": CONSTANTS.SANDBOX_ENV,
 	  "secret_key":  "_YOUR_SECRET_KEY_",
-	  "conn_timeout": 65,
-	  "timeout": 65,
+	  "conn_timeout": 10,
+	  "timeout": 60,
 	})
 }
 
