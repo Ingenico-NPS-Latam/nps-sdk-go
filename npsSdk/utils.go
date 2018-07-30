@@ -252,7 +252,8 @@ func AddExtraInf(request interface{}) {
 				if typeOfT.Field(i).Name == "SdkInfo" {
 					var buffer bytes.Buffer
 					buffer.WriteString(CONSTANTS.SDK_NAME)
-					buffer.WriteString("Version:")
+					buffer.WriteString(" SDK ")
+					buffer.WriteString("Version: ")
 					buffer.WriteString(CONSTANTS.SDK_VERSION)
 
 					var sdkInfo string = buffer.String()
