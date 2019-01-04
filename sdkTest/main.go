@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk"
-	CONSTANTS "github.com/Ingenico-NPS-Latam/nps-sdk-go/npsSdk/constants"
+	"../npsSdk"
+	CONSTANTS "../npsSdk/constants"
 )
 
 func SendPayOnLine_2p(service *npsSdk.PaymentServicePlatformPortType) error {
@@ -279,7 +279,7 @@ func SendCreateClientSession(service *npsSdk.PaymentServicePlatformPortType) err
 
         createClientSession.Psp_Version = "2.2"
         createClientSession.Psp_MerchantId = "psp_test"
-        createClientSession.Psp_PosDateTime = "2017-06-19 12:00:00"
+        createClientSession.Psp_PosDateTime = "2017-01-01 12:00:00"
 
         resp, err := service.CreateClientSession(createClientSession)
         if err != nil {
@@ -1494,7 +1494,7 @@ func main() {
 		//"environment": CONSTANTS.LOCAL_ENV,
 		//"environment": CONSTANTS.STAGING_ENV,
                "environment": CONSTANTS.SANDBOX_ENV,
-		"secret_key":  "IeShlZMDk8mp8VA6vy41mLnVggnj1yqHcJyNqIYaRINZnXdiTfhF0Ule9WNAUCR6",
+		"secret_key":  "YOUR_SECRET_KEY",
 		"debug":       true,
 		"log_level":   CONSTANTS.DEBUG,
 		//"conn_timeout": 10,
@@ -1507,7 +1507,7 @@ func main() {
 
 	service := npsSdk.NewPaymentServicePlatformPortType(true)
 
-	err = SendPayOnLine_2p(service)
+	//err = SendPayOnLine_2p(service)
 	//err = SendAuthorize_2p(service)
 	//err = SendBankPayment_2p(service)
 	//err = SendSplitPayOnLine_2p(service)
@@ -1527,7 +1527,7 @@ func main() {
 	//err = SendCreatePaymentMethodToken(service)
 	//err = SendRetrievePaymentMethodToken(service)
 	//err = SendRecachePaymentMethodToken(service)
-	//err = SendCreateClientSession(service)
+	err = SendCreateClientSession(service)
 
 	//err = SendCreatePaymentMethodFromPayment(service)
 	//err = SendRetrievePaymentMethod(service)

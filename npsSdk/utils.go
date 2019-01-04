@@ -3,6 +3,9 @@ package npsSdk
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/hmac"
+	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -158,16 +161,28 @@ func AddSecureHashIfNoClientSession(request interface{}) error {
 		buffer.WriteString(m[keys[i]])
 	}
 
-	buffer.WriteString(Configuration.GetSecretKey())
-
-	data := []byte(buffer.String())
-
-	hash := md5.Sum(data)
-
-	var secureHash string = hex.EncodeToString(hash[:])
-	s.Field(secureHashIdx).SetString(secureHash)
+	secure_hash := ComputeHmac256Hash(buffer.String(), Configuration.GetSecretKey())
+	s.Field(secureHashIdx).SetString(secure_hash)
 	return nil
+}
 
+func ComputeHmac256Hash(data string, secret string) string { 
+	key:= []byte(secret)
+	h := hmac.New(sha256.New, key)
+	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func ComputeHmac512Hash(data string, secret string) string { 
+	key:= []byte(secret)
+	h := hmac.New(sha512.New, key)
+	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func ComputeMd5Hash(data string) string {
+	hash := md5.Sum([]byte(data))
+	return hex.EncodeToString(hash[:])
 }
 
 func Sanitize(request interface{}, keyName string, level int) {
